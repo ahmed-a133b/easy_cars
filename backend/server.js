@@ -34,7 +34,7 @@ app.use(express.json())
 app.use(rateLimiter)
 
 app.use(cors({
-  origin: 'https://easy-cars.vercel.app/',
+  origin: 'https://easy-cars.vercel.app',
   credentials: true
 }));
 
