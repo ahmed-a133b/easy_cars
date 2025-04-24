@@ -31,10 +31,18 @@ const PORT = process.env.PORT || 5000
 // Middleware
 app.set('trust proxy', 1);
 
-app.use(cors({
-  origin: 'https://easy-cars.vercel.app',
-  credentials: true
-}));
+// app.use(cors({
+//   origin: 'https://easy-cars.vercel.app',
+//   credentials: true
+// }));
+
+const corsOptions = {
+  origin: 'https://easy-cars.vercel.app', // Replace with your frontend URL
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 
 // app.options('*', cors({
 //   origin: 'https://easy-cars.vercel.app',
