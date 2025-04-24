@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://easycar-4a65991d3f5e.herokuapp.com/api',
+  baseURL: 'https://easycars-production.up.railway.app/api',
   headers: {
     'Content-Type': 'application/json'
   },
