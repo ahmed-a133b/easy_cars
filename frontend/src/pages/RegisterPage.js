@@ -344,6 +344,7 @@ const RegisterPage = () => {
   //     setIsSubmitting(false)
   //   }
   // }
+  
   const handleSubmit = async (e) => {
     e.preventDefault()
   
