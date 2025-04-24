@@ -34,7 +34,8 @@ app.use(express.json())
 app.use(rateLimiter)
 
 app.use(cors({
-  origin: 'https://easy-cars-enu6ja8rr-ahmed-a133bs-projects.vercel.app/'
+  origin: 'https://easy-cars-enu6ja8rr-ahmed-a133bs-projects.vercel.app/',
+  credentials: true
 }));
 
 // Routes

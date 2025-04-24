@@ -1,5 +1,5 @@
 "use client"
-
+import api from "../api"
 import { useState, useEffect, useContext } from "react"
 import { useParams, useHistory, Link } from "react-router-dom"
 import axios from "axios"
@@ -38,7 +38,7 @@ const RentCarPage = () => {
   useEffect(() => {
     const fetchCarDetails = async () => {
       try {
-        const res = await axios.get(`/api/cars/${id}`)
+        const res = await api.get(`/cars/${id}`)
         const carData = res.data.data
 
         if (!carData.forRent || !carData.available) {
@@ -139,7 +139,7 @@ const RentCarPage = () => {
         paymentMethod: formData.paymentMethod,
       }
 
-      await axios.post("/api/rentals", rentalData)
+      await api.post("/rentals", rentalData)
 
       setSuccess("Your rental has been successfully booked!")
 

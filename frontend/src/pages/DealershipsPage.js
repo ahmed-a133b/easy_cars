@@ -1,5 +1,5 @@
 "use client"
-
+import api from "../api"
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import axios from "axios"
@@ -17,7 +17,7 @@ const DealershipsPage = () => {
   useEffect(() => {
     const fetchDealerships = async () => {
       try {
-        const res = await axios.get("/api/dealerships")
+        const res = await api.get("/dealerships")
         setDealerships(res.data.data)
       } catch (err) {
         setError("Failed to fetch dealerships. Please try again later.")

@@ -1,5 +1,5 @@
 "use client"
-
+import api from "../api"
 import { useState, useEffect } from "react"
 import axios from "axios"
 import "./AdminDashboard.css"
@@ -22,7 +22,7 @@ const AdminDashboard = () => {
       setLoading(true);
       try {
         if (activeTab === 'users') {
-          const res = await axios.get('/api/users');
+          const res = await api.get('/users');
           setUsers(res.data.data);
         } else if (activeTab === 'logs') {
           const fetchLogs = async () => {
@@ -31,7 +31,7 @@ const AdminDashboard = () => {
             if (logFilters.startDate) params.startDate = logFilters.startDate;
             if (logFilters.endDate) params.endDate = logFilters.endDate;
 
-            const res = await axios.get('/api/logs', { params });
+            const res = await api.get('/logs', { params });
             setLogs(res.data.data);
           };
 
@@ -54,9 +54,9 @@ const AdminDashboard = () => {
     }
 
     try {
-      await axios.delete(`/api/users/${userId}`);
+      await api.delete(`/users/${userId}`);
       setSuccess('User deleted successfully.');
-      const res = await axios.get('/api/users');
+      const res = await api.get('/users');
       setUsers(res.data.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete user.');
@@ -81,7 +81,7 @@ const AdminDashboard = () => {
         if (logFilters.startDate) params.startDate = logFilters.startDate;
         if (logFilters.endDate) params.endDate = logFilters.endDate;
 
-        const res = await axios.get('/api/logs', { params });
+        const res = await api.get('/logs', { params });
         setLogs(res.data.data);
       } catch (err) {
         setError('Failed to fetch logs. Please try again later.');
@@ -224,7 +224,7 @@ const AdminDashboard = () => {
 
                         const fetchLogs = async () => {
                           try {
-                            const res = await axios.get('/api/logs');
+                            const res = await api.get('/logs');
                             setLogs(res.data.data);
                           } catch (err) {
                             setError('Failed to fetch logs. Please try again later.');

@@ -1,5 +1,5 @@
 "use client"
-
+import api from "../api"
 import { useState, useEffect } from "react"
 import { Link, useLocation } from "react-router-dom"
 import axios from "axios"
@@ -40,7 +40,7 @@ const CarListingsPage = () => {
           Object.keys(params).forEach(
             (key) => (params[key] === "" || params[key] === false) && delete params[key]
           )
-          const res = await axios.get("/api/cars", { params })
+          const res = await api.get("/cars", { params })
           setCars(res.data.data)
         } catch (err) {
           setError("Failed to fetch cars. Please try again later.")
@@ -73,7 +73,7 @@ const CarListingsPage = () => {
       Object.keys(filtered).forEach(
         (key) => (filtered[key] === "" || filtered[key] === false) && delete filtered[key]
       )
-      const res = await axios.get("/api/cars", { params: filtered })
+      const res = await api.get("/cars", { params: filtered })
       setCars(res.data.data)
     } catch (err) {
       setError("Failed to fetch cars. Please try again later.")

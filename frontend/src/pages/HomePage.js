@@ -80,7 +80,7 @@
 // }
 
 // export default HomePage
-
+import api from "../api"
 import { useContext, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { AuthContext } from "../context/AuthContext"
@@ -99,8 +99,8 @@ const HomePage = () => {
   useEffect(() => {
     const fetchFeaturedCars = async () => {
       try {
-        const res = await fetch("/api/cars/featured")
-        const data = await res.json()
+        const res = await api.get("/cars/featured")
+        const data = res.data
         setFeaturedCars(data)
       } catch (err) {
         console.error("Error fetching featured cars:", err)

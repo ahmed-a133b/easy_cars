@@ -1,5 +1,5 @@
 "use client"
-
+import api from "../api"
 import { useState, useEffect, useContext } from "react"
 import { Link } from "react-router-dom"
 import axios from "axios"
@@ -30,7 +30,7 @@ const ForumPage = () => {
         const params = {}
         if (selectedCategory) params.category = selectedCategory
 
-        const res = await axios.get("/api/forum", { params })
+        const res = await api.get("/forum", { params })
         setPosts(res.data.data)
       } catch (err) {
         setError("Failed to fetch forum posts. Please try again later.")
@@ -51,7 +51,7 @@ const ForumPage = () => {
       if (selectedCategory) params.category = selectedCategory
       if (search) params.search = search
 
-      const res = await axios.get("/api/forum", { params })
+      const res = await api.get("/forum", { params })
       setPosts(res.data.data)
     } catch (err) {
       setError("Failed to fetch forum posts. Please try again later.")

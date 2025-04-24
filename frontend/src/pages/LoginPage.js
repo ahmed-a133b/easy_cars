@@ -1,5 +1,5 @@
 "use client"
-
+import api from "../api"
 import { useState, useContext, useEffect } from "react"
 import { Link, useHistory, useLocation } from "react-router-dom"
 import { AuthContext } from "../context/AuthContext"

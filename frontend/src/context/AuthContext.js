@@ -1,5 +1,5 @@
 "use client"
-
+import api from "../api"
 import { createContext, useState, useEffect } from "react"
 import axios from "axios"
 
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         setAuthToken(token)
         try {
-          const res = await axios.get("/api/auth/profile")
+          const res = await api.get("/auth/profile")
           setUser(res.data.data)
           setIsAuthenticated(true)
         } catch (err) {
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
   // Register user
   const register = async (formData) => {
     try {
-      const res = await axios.post("/api/auth/register", formData)
+      const res = await api.post("/auth/register", formData)
 
       setToken(res.data.token)
       setUser(res.data.user)
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
   // Login user
   const login = async (formData) => {
     try {
-      const res = await axios.post("/api/auth/login", formData)
+      const res = await api.post("/auth/login", formData)
 
       setToken(res.data.token)
       setUser(res.data.user)
@@ -93,7 +93,7 @@ export const AuthProvider = ({ children }) => {
   // Update user profile
   const updateProfile = async (formData) => {
     try {
-      const res = await axios.put("/api/users/update-profile", formData)
+      const res = await api.put("/users/update-profile", formData)
 
       setUser(res.data.data)
       setError(null)

@@ -1,5 +1,5 @@
 "use client"
-
+import api from "../api"
 import { useState, useEffect, useContext } from "react"
 import { AuthContext } from "../context/AuthContext"
 import axios from "axios"
@@ -52,8 +52,8 @@ const ProfilePage = () => {
     const fetchUserData = async () => {
       try {
         const [rentalsRes, salesRes] = await Promise.all([
-          axios.get("/api/users/rentals"),
-          axios.get("/api/users/sales"),
+          api.get("/users/rentals"),
+          api.get("/users/sales"),
         ])
 
         setRentals(rentalsRes.data.data)

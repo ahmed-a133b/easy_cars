@@ -1,5 +1,5 @@
 "use client"
-
+import api from "../api"
 import { useState, useEffect, useContext, useCallback } from "react"
 import { useParams, Link, useHistory } from "react-router-dom"
 import axios from "axios"
@@ -40,7 +40,7 @@ const ForumPostPage = () => {
     
     setLoading(true);
     try {
-      const res = await axios.get(`/api/forum/${id}`);
+      const res = await api.get(`/forum/${id}`);
       setPost(res.data.data);
     } catch (err) {
       setError("Failed to fetch post. Please try again later.");
@@ -73,7 +73,7 @@ const ForumPostPage = () => {
     setCommentError("");
 
     try {
-      await axios.post(`/api/forum/${id}/comments`, { text: commentText });
+      await api.post(`/forum/${id}/comments`, { text: commentText });
       setCommentText("");
       fetchPost(); // Refresh post to show new comment
     } catch (err) {
@@ -91,7 +91,7 @@ const ForumPostPage = () => {
     }
 
     try {
-      await axios.put(`/api/forum/${id}/like`, { action });
+      await api.put(`/forum/${id}/like`, { action });
       fetchPost(); // Refresh post to update votes
     } catch (err) {
       console.error("Failed to vote:", err);
@@ -127,7 +127,7 @@ const ForumPostPage = () => {
         tags: tagsArray
       };
 
-      const res = await axios.post("/api/forum", postData);
+      const res = await api.post("/forum", postData);
       
       // Redirect to the newly created post
       history.push(`/forum/${res.data.data._id}`);

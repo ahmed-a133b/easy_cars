@@ -1,5 +1,5 @@
 "use client"
-
+import api from "../api"
 import { useState, useEffect, useContext } from "react"
 import { useLocation, useHistory, Link } from "react-router-dom"
 import axios from "axios"
@@ -38,7 +38,7 @@ const SellCarPage = () => {
 
     const fetchCarDetails = async () => {
       try {
-        const res = await axios.get(`/api/cars/${carId}`)
+        const res = await api.get(`/cars/${carId}`)
         const carData = res.data.data
 
         if (!carData.forSale || !carData.available) {
@@ -78,7 +78,7 @@ const SellCarPage = () => {
         paymentMethod: formData.paymentMethod,
       }
 
-      await axios.post("/api/sales", saleData)
+      await api.post("/sales", saleData)
 
       setSuccess("Your purchase has been successfully completed!")
 
