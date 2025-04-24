@@ -1,20 +1,11 @@
-// backend/routes/authRoutes.js
-const express = require('express');
-const router = express.Router();
-const { 
-  registerUser, 
-  loginUser, 
-  getUserProfile, 
-  updateUserProfile 
-} = require('../controllers/authController');
-const { protect, apiLimiter } = require('../middleware/auth');
+const express = require("express")
+const { register, login, getProfile } = require("../controllers/authController")
+const { protect } = require("../middleware/authMiddleware")
 
-// Apply rate limiting to auth routes
-router.use(apiLimiter);
+const router = express.Router()
 
-router.post('/register', registerUser);
-router.post('/login', loginUser);
-router.get('/profile', protect, getUserProfile);
-router.put('/profile', protect, updateUserProfile);
+router.post("/register", register)
+router.post("/login", login)
+router.get("/profile", protect, getProfile)
 
-module.exports = router;
+module.exports = router

@@ -1,92 +1,79 @@
-// backend/models/Car.js
-const mongoose = require('mongoose');
+const mongoose = require("mongoose")
 
-const carSchema = new mongoose.Schema({
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  make: {
-    type: String,
-    required: [true, 'Car make is required'],
-    trim: true
-  },
-  model: {
-    type: String,
-    required: [true, 'Car model is required'],
-    trim: true
-  },
-  year: {
-    type: Number,
-    required: [true, 'Car year is required']
-  },
-  color: {
-    type: String,
-    required: [true, 'Car color is required']
-  },
-  mileage: {
-    type: Number,
-    required: [true, 'Car mileage is required']
-  },
-  price: {
-    type: Number,
-    required: [true, 'Price is required']
-  },
-  images: [{
-    type: String
-  }],
-  description: {
-    type: String,
-    required: [true, 'Description is required']
-  },
-  features: [{
-    type: String
-  }],
-  forSale: {
-    type: Boolean,
-    default: false
-  },
-  forRent: {
-    type: Boolean,
-    default: false
-  },
-  rentPrice: {
-    daily: {
-      type: Number
-    },
-    weekly: {
-      type: Number
-    },
-    monthly: {
-      type: Number
-    }
-  },
-  location: {
-    type: {
+const CarSchema = new mongoose.Schema(
+  {
+    make: {
       type: String,
-      default: 'Point'
+      required: [true, "Please provide car make"],
+      trim: true,
     },
-    coordinates: {
-      type: [Number]
+    model: {
+      type: String,
+      required: [true, "Please provide car model"],
+      trim: true,
     },
-    address: String,
-    city: String,
-    state: String,
-    zipCode: String
+    year: {
+      type: Number,
+      required: [true, "Please provide car year"],
+    },
+    color: {
+      type: String,
+      required: [true, "Please provide car color"],
+    },
+    price: {
+      type: Number,
+      required: [true, "Please provide car price"],
+    },
+    mileage: {
+      type: Number,
+      required: [true, "Please provide car mileage"],
+    },
+    fuelType: {
+      type: String,
+      enum: ["Gasoline", "Diesel", "Electric", "Hybrid"],
+      required: [true, "Please provide fuel type"],
+    },
+    transmission: {
+      type: String,
+      enum: ["Automatic", "Manual"],
+      required: [true, "Please provide transmission type"],
+    },
+    description: {
+      type: String,
+      required: [true, "Please provide car description"],
+    },
+    images: [String],
+    features: [String],
+    available: {
+      type: Boolean,
+      default: true,
+    },
+    forRent: {
+      type: Boolean,
+      default: false,
+    },
+    forSale: {
+      type: Boolean,
+      default: true,
+    },
+    rentalPrice: {
+      daily: Number,
+      weekly: Number,
+      monthly: Number,
+    },
+    dealership: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Dealership",
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  status: {
-    type: String,
-    enum: ['available', 'sold', 'rented', 'under_review', 'maintenance'],
-    default: 'under_review'
+  {
+    timestamps: true,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-}, { timestamps: true });
+)
 
-// Add indexing for location-based queries
-carSchema.index({ location: '2dsphere' });
-
-module.exports = mongoose.model('Car', carSchema);
+module.exports = mongoose.model("Car", CarSchema)

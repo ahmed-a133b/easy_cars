@@ -1,12 +1,15 @@
-const express = require('express');
-const router = express.Router();
-const carCtrl = require('../controllers/carController');
-const { protect } = require('../middleware/auth');
+const express = require("express")
+const { getCars, getCarById, createCar, updateCar, deleteCar, getFeaturedCars } = require("../controllers/carController")
+const { protect, authorize } = require("../middleware/authMiddleware")
 
-router.get('/', carCtrl.getAllCars);
-router.get('/:id', carCtrl.getCarById);
-router.post('/', protect, carCtrl.createCar);
-router.put('/:id', protect, carCtrl.updateCar);
-router.delete('/:id', protect, carCtrl.deleteCar);
+const router = express.Router()
 
-module.exports = router;
+router.get("/", getCars)
+router.get("/:id", getCarById)
+router.get("/featured", getFeaturedCars)
+router.post("/", protect, authorize("dealership_manager", "admin"), createCar)
+router.put("/:id", protect, authorize("dealership_manager", "admin"), updateCar)
+router.delete("/:id", protect, authorize("dealership_manager", "admin"), deleteCar)
+
+
+module.exports = router

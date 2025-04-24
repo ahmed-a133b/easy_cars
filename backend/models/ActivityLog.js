@@ -1,36 +1,34 @@
-// backend/models/ActivityLog.js
-const mongoose = require('mongoose');
+const mongoose = require("mongoose")
 
-const activityLogSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+const ActivityLogSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    action: {
+      type: String,
+      required: [true, "Please provide action description"],
+    },
+    resourceType: {
+      type: String,
+      enum: ["user", "car", "rental", "sale", "forum", "dealership"],
+      required: true,
+    },
+    resourceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    ipAddress: String,
+    userAgent: String,
+    timestamp: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  action: {
-    type: String,
-    required: true
+  {
+    timestamps: true,
   },
-  entity: {
-    type: String,
-    enum: ['user', 'car', 'rental', 'sale', 'forum', 'system'],
-    required: true
-  },
-  entityId: {
-    type: mongoose.Schema.Types.ObjectId
-  },
-  details: {
-    type: Object
-  },
-  ipAddress: {
-    type: String
-  },
-  userAgent: {
-    type: String
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+)
 
-module.exports = mongoose.model('ActivityLog', activityLogSchema);
+module.exports = mongoose.model("ActivityLog", ActivityLogSchema)

@@ -1,49 +1,43 @@
-// backend/models/Sale.js
-const mongoose = require('mongoose');
+const mongoose = require("mongoose")
 
-const saleSchema = new mongoose.Schema({
-  car: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Car',
-    required: true
-  },
-  seller: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  buyer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  salePrice: {
-    type: Number,
-    required: true
-  },
-  paymentMethod: {
-    type: String,
-    enum: ['cash', 'bank_transfer', 'financing'],
-    required: true
-  },
-  paymentStatus: {
-    type: String,
-    enum: ['pending', 'completed', 'cancelled'],
-    default: 'pending'
-  },
-  saleDate: {
-    type: Date,
-    default: Date.now
-  },
-  documents: [{
-    name: String,
-    fileUrl: String,
-    uploadDate: {
+const SaleSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    car: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Car",
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: [true, "Please provide sale price"],
+    },
+    saleDate: {
       type: Date,
-      default: Date.now
-    }
-  }],
-  notes: String
-}, { timestamps: true });
+      default: Date.now,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "completed", "cancelled"],
+      default: "pending",
+    },
+    paymentMethod: {
+      type: String,
+      enum: ["credit_card", "debit_card", "paypal", "cash", "financing"],
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  {
+    timestamps: true,
+  },
+)
 
-module.exports = mongoose.model('Sale', saleSchema);
+module.exports = mongoose.model("Sale", SaleSchema)

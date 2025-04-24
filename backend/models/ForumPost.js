@@ -1,63 +1,64 @@
-// backend/models/ForumPost.js
-const mongoose = require('mongoose');
+const mongoose = require("mongoose")
 
-const forumPostSchema = new mongoose.Schema({
-  author: {
+const CommentSchema = new mongoose.Schema({
+  user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    ref: "User",
+    required: true,
   },
-  title: {
+  text: {
     type: String,
-    required: [true, 'Post title is required'],
-    trim: true
-  },
-  content: {
-    type: String,
-    required: [true, 'Post content is required']
-  },
-  category: {
-    type: String,
-    enum: ['general', 'buying', 'selling', 'renting', 'maintenance', 'other'],
-    default: 'general'
-  },
-  tags: [{
-    type: String
-  }],
-  likes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }],
-  views: {
-    type: Number,
-    default: 0
-  },
-  comments: [{
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    content: {
-      type: String,
-      required: true
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now
-    }
-  }],
-  isSticky: {
-    type: Boolean,
-    default: false
-  },
-  isLocked: {
-    type: Boolean,
-    default: false
+    required: [true, "Please provide comment text"],
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
-}, { timestamps: true });
+    default: Date.now,
+  },
+})
 
-module.exports = mongoose.model('ForumPost', forumPostSchema);
+const ForumPostSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: [true, "Please provide post title"],
+      trim: true,
+    },
+    content: {
+      type: String,
+      required: [true, "Please provide post content"],
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    category: {
+      type: String,
+      enum: ["General", "Car Reviews", "Buying Advice", "Selling Tips", "Maintenance", "Other"],
+      default: "General",
+    },
+    comments: [CommentSchema],
+    upvotes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    downvotes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    tags: [String],
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  {
+    timestamps: true,
+  },
+)
+
+module.exports = mongoose.model("ForumPost", ForumPostSchema)

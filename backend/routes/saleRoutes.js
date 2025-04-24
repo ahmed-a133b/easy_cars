@@ -1,9 +1,10 @@
-const express = require('express');
-const router = express.Router();
-const saleCtrl = require('../controllers/saleController');
-const { protect } = require('../middleware/auth');
+const express = require("express")
+const { getSales, createSale } = require("../controllers/saleController")
+const { protect } = require("../middleware/authMiddleware")
 
-router.post('/', protect, saleCtrl.createSale);
-router.get('/my-sales', protect, saleCtrl.getSalesByUser);
+const router = express.Router()
 
-module.exports = router;
+router.get("/", protect, getSales)
+router.post("/", protect, createSale)
+
+module.exports = router

@@ -1,9 +1,12 @@
-const express = require('express');
-const router = express.Router();
-const rentalCtrl = require('../controllers/rentalController');
-const { protect } = require('../middleware/auth');
+const express = require("express")
+const { getRentals, getRentalById, createRental, cancelRental } = require("../controllers/rentalController")
+const { protect } = require("../middleware/authMiddleware")
 
-router.post('/', protect, rentalCtrl.createRental);
-router.get('/my-rentals', protect, rentalCtrl.getRentalsByUser);
+const router = express.Router()
 
-module.exports = router;
+router.get("/", protect, getRentals)
+router.get("/:id", protect, getRentalById)
+router.post("/", protect, createRental)
+router.put("/:id/cancel", protect, cancelRental)
+
+module.exports = router

@@ -1,9 +1,13 @@
-const express = require('express');
-const router = express.Router();
-const forumCtrl = require('../controllers/forumController');
-const { protect } = require('../middleware/auth');
+const express = require("express")
+const { getPosts, getPostById, createPost, addComment, likePost } = require("../controllers/forumController")
+const { protect } = require("../middleware/authMiddleware")
 
-router.get('/', forumCtrl.getPosts);
-router.post('/', protect, forumCtrl.createPost);
+const router = express.Router()
 
-module.exports = router;
+router.get("/", getPosts)
+router.get("/:id", getPostById)
+router.post("/", protect, createPost)
+router.post("/:id/comments", protect, addComment)
+router.put("/:id/like", protect, likePost)
+
+module.exports = router

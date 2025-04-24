@@ -1,199 +1,145 @@
-// backend/controllers/authController.js
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
-const asyncHandler = require('express-async-handler');
-const ActivityLog = require('../models/ActivityLog');
+const User = require("../models/User")
+const ActivityLog = require("../models/ActivityLog")
 
-// Generate JWT
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'easycars_secret', {
-    expiresIn: '30d',
-  });
-};
-
-// @desc    Register a new user
+// @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
-const registerUser = asyncHandler(async (req, res) => {
-  const { firstName, lastName, email, password, phone } = req.body;
+exports.register = async (req, res) => {
+  try {
+    const { name, email, password, role, phone, address } = req.body
 
-  // Check if user exists
-  const userExists = await User.findOne({ email });
+    // Check if user already exists
+    const userExists = await User.findOne({ email })
 
-  if (userExists) {
-    res.status(400);
-    throw new Error('User already exists');
-  }
+    if (userExists) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+      })
+    }
 
-  // Create user
-  const user = await User.create({
-    firstName,
-    lastName,
-    email,
-    password,
-    phone
-  });
+    // Create user
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role: role || "customer",
+      phone,
+      address,
+    })
 
-  if (user) {
     // Log activity
     await ActivityLog.create({
       user: user._id,
-      action: 'REGISTER',
-      entity: 'user',
-      entityId: user._id,
-      details: { email },
+      action: "User registered",
+      resourceType: "user",
+      resourceId: user._id,
       ipAddress: req.ip,
-      userAgent: req.headers['user-agent']
-    });
+      userAgent: req.headers["user-agent"],
+    })
+
+    // Generate token
+    const token = user.getSignedJwtToken()
 
     res.status(201).json({
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      role: user.role,
-      token: generateToken(user._id),
-    });
-  } else {
-    res.status(400);
-    throw new Error('Invalid user data');
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    })
   }
-});
+}
 
-// @desc    Login user & get token
+// @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
-const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body
 
-  // Check for user email
-  const user = await User.findOne({ email }).select('+password');
+    // Validate email & password
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide an email and password",
+      })
+    }
 
-  if (!user) {
-    res.status(401);
-    throw new Error('Invalid credentials');
-  }
+    // Check for user
+    const user = await User.findOne({ email }).select("+password")
 
-  if (!user.isActive) {
-    res.status(401);
-    throw new Error('Account is disabled. Please contact support.');
-  }
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      })
+    }
 
-  // Check if password matches
-  const isMatch = await user.matchPassword(password);
+    // Check if password matches
+    const isMatch = await user.matchPassword(password)
 
-  if (!isMatch) {
-    // Log failed login attempt
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      })
+    }
+
+    // Log activity
     await ActivityLog.create({
-      action: 'LOGIN_FAILED',
-      entity: 'user',
-      details: { email },
+      user: user._id,
+      action: "User logged in",
+      resourceType: "user",
+      resourceId: user._id,
       ipAddress: req.ip,
-      userAgent: req.headers['user-agent']
-    });
+      userAgent: req.headers["user-agent"],
+    })
 
-    res.status(401);
-    throw new Error('Invalid credentials');
+    // Generate token
+    const token = user.getSignedJwtToken()
+
+    res.status(200).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    })
   }
+}
 
-  // Update last login time
-  user.lastLogin = Date.now();
-  await user.save();
-
-  // Log successful login
-  await ActivityLog.create({
-    user: user._id,
-    action: 'LOGIN',
-    entity: 'user',
-    entityId: user._id,
-    details: { email },
-    ipAddress: req.ip,
-    userAgent: req.headers['user-agent']
-  });
-
-  res.json({
-    _id: user._id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    role: user.role,
-    token: generateToken(user._id),
-  });
-});
-
-// @desc    Get user profile
+// @desc    Get current logged in user
 // @route   GET /api/auth/profile
 // @access  Private
-const getUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
+exports.getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
 
-  if (user) {
-    res.json({
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      role: user.role,
-      phone: user.phone,
-      address: user.address,
-      profilePicture: user.profilePicture,
-      createdAt: user.createdAt
-    });
-  } else {
-    res.status(404);
-    throw new Error('User not found');
+    res.status(200).json({
+      success: true,
+      data: user,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    })
   }
-});
-
-// @desc    Update user profile
-// @route   PUT /api/auth/profile
-// @access  Private
-const updateUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
-
-  if (user) {
-    user.firstName = req.body.firstName || user.firstName;
-    user.lastName = req.body.lastName || user.lastName;
-    user.email = req.body.email || user.email;
-    user.phone = req.body.phone || user.phone;
-    
-    if (req.body.address) {
-      user.address = {
-        ...user.address,
-        ...req.body.address
-      };
-    }
-
-    if (req.body.password) {
-      user.password = req.body.password;
-    }
-
-    if (req.body.profilePicture) {
-      user.profilePicture = req.body.profilePicture;
-    }
-
-    const updatedUser = await user.save();
-
-    res.json({
-      _id: updatedUser._id,
-      firstName: updatedUser.firstName,
-      lastName: updatedUser.lastName,
-      email: updatedUser.email,
-      role: updatedUser.role,
-      phone: updatedUser.phone,
-      address: updatedUser.address,
-      profilePicture: updatedUser.profilePicture,
-      token: generateToken(updatedUser._id),
-    });
-  } else {
-    res.status(404);
-    throw new Error('User not found');
-  }
-});
-
-module.exports = {
-  registerUser,
-  loginUser,
-  getUserProfile,
-  updateUserProfile
-};
+}
