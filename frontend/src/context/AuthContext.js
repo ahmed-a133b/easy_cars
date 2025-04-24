@@ -49,6 +49,7 @@ export const AuthProvider = ({ children }) => {
   // Register user
   const register = async (formData) => {
     try {
+      console.log('Registering with:', formData);
       const res = await api.post("/auth/register", formData)
 
       setToken(res.data.token)
