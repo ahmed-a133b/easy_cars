@@ -1,0 +1,219 @@
+.car-detail-page {
+  padding: 2rem 0;
+}
+
+.car-detail-content {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+}
+
+.car-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.main-image {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  border-radius: var(--border-radius);
+}
+
+.main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnail-images {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 60px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: var(--transition);
+}
+
+.thumbnail.active {
+  opacity: 1;
+  border: 2px solid var(--primary-color);
+}
+
+.thumbnail:hover {
+  opacity: 1;
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.car-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.car-badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.car-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.rent-badge {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.sale-badge {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.unavailable-badge {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.car-specs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.spec-label {
+  font-size: 0.875rem;
+  color: var(--gray-color);
+}
+
+.spec-value {
+  font-weight: 500;
+}
+
+.car-pricing {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: var(--gray-light-color);
+  border-radius: var(--border-radius);
+}
+
+.price-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.price-label {
+  font-weight: 500;
+}
+
+.price-value {
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.rental-prices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.car-description {
+  margin-bottom: 1.5rem;
+}
+
+.car-description h3 {
+  margin-bottom: 0.5rem;
+  color: var(--secondary-color);
+}
+
+.car-features {
+  margin-bottom: 1.5rem;
+}
+
+.car-features h3 {
+  margin-bottom: 0.5rem;
+  color: var(--secondary-color);
+}
+
+.features-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  list-style: none;
+  padding-left: 0;
+}
+
+.features-list li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.features-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--success-color);
+  font-weight: bold;
+}
+
+.car-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.dealership-card {
+  margin-top: 1rem;
+}
+
+@media (max-width: 992px) {
+  .car-detail-content {
+    grid-template-columns: 1fr;
+  }
+
+  .main-image {
+    height: 300px;
+  }
+}
+
+@media (max-width: 576px) {
+  .car-specs {
+    grid-template-columns: 1fr;
+  }
+
+  .features-list {
+    grid-template-columns: 1fr;
+  }
+
+  .car-actions {
+    flex-direction: column;
+  }
+
+  .main-image {
+    height: 250px;
+  }
+}

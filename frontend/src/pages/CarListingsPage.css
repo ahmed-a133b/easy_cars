@@ -1,0 +1,157 @@
+.car-listings-page {
+  padding: 2rem 0;
+}
+
+.car-listings-page h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--primary-color);
+}
+
+.car-listings-content {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+}
+
+.filters-sidebar {
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+.price-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.checkbox-group {
+  margin-bottom: 1rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-label input {
+  margin-right: 0.5rem;
+}
+
+.car-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.car-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.car-image {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+}
+
+.car-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.car-card:hover .car-image img {
+  transform: scale(1.05);
+}
+
+.car-badge {
+  position: absolute;
+  top: 10px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.rent-badge {
+  right: 10px;
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.sale-badge {
+  left: 10px;
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.car-details {
+  margin-bottom: 1rem;
+}
+
+.car-details p {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.car-price {
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.sale-price {
+  color: var(--primary-color);
+}
+
+.rental-price {
+  color: var(--secondary-color);
+}
+
+.no-cars-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+}
+
+.spinner-container {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+@media (max-width: 992px) {
+  .car-listings-content {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-sidebar {
+    position: static;
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .car-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .price-range {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-buttons {
+    flex-direction: column;
+  }
+}

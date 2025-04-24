@@ -1,0 +1,97 @@
+.rent-car-page {
+  padding: 2rem 0;
+}
+
+.rent-car-page h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--primary-color);
+}
+
+.rent-car-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.car-summary {
+  display: flex;
+  flex-direction: column;
+}
+
+.car-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: var(--border-radius);
+  margin-bottom: 1rem;
+}
+
+.car-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.car-details p {
+  margin: 0.5rem 0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.rental-summary {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: var(--gray-light-color);
+  border-radius: var(--border-radius);
+}
+
+.rental-summary h3 {
+  margin-bottom: 1rem;
+  color: var(--secondary-color);
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.summary-item.total {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  font-weight: 700;
+}
+
+.renter-info {
+  margin: 1.5rem 0;
+}
+
+.renter-info h3 {
+  margin-bottom: 1rem;
+  color: var(--secondary-color);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 992px) {
+  .rent-car-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}

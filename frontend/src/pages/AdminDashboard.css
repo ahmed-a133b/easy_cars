@@ -1,0 +1,157 @@
+.admin-dashboard {
+  padding: 2rem 0;
+}
+
+.admin-dashboard h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--primary-color);
+}
+
+.dashboard-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--gray-color);
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.tab-button:hover {
+  color: var(--primary-color);
+}
+
+.tab-button.active {
+  color: var(--primary-color);
+}
+
+.tab-button.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-color);
+}
+
+.dashboard-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.users-table,
+.logs-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.users-table th,
+.users-table td,
+.logs-table th,
+.logs-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.users-table th,
+.logs-table th {
+  background-color: var(--gray-light-color);
+  font-weight: 500;
+}
+
+.dark-mode .users-table th,
+.dark-mode .logs-table th {
+  background-color: var(--secondary-color);
+}
+
+.user-actions,
+.log-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.log-filters {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: var(--gray-light-color);
+  border-radius: var(--border-radius);
+}
+
+.dark-mode .log-filters {
+  background-color: var(--secondary-color);
+}
+
+.filter-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.user-role {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.role-admin {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.role-dealership_manager {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.role-customer {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  background-color: var(--gray-light-color);
+  border-radius: var(--border-radius);
+}
+
+.dark-mode .no-data {
+  background-color: var(--secondary-color);
+}
+
+@media (max-width: 768px) {
+  .users-table,
+  .logs-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .filter-form {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-buttons {
+    flex-direction: column;
+  }
+}

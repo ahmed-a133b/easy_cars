@@ -1,0 +1,78 @@
+.spinner {
+  display: inline-block;
+  position: relative;
+}
+
+.spinner-circle {
+  border-radius: 50%;
+  border-style: solid;
+  border-color: currentColor;
+  border-top-color: transparent;
+  animation: spinner-rotate 0.8s linear infinite;
+}
+
+.spinner-small .spinner-circle {
+  width: 1rem;
+  height: 1rem;
+  border-width: 2px;
+}
+
+.spinner-medium .spinner-circle {
+  width: 2rem;
+  height: 2rem;
+  border-width: 3px;
+}
+
+.spinner-large .spinner-circle {
+  width: 3rem;
+  height: 3rem;
+  border-width: 4px;
+}
+
+.spinner-primary {
+  color: var(--primary-color);
+}
+
+.spinner-secondary {
+  color: var(--secondary-color);
+}
+
+.spinner-success {
+  color: var(--success-color);
+}
+
+.spinner-danger {
+  color: var(--danger-color);
+}
+
+.spinner-warning {
+  color: var(--warning-color);
+}
+
+.spinner-info {
+  color: var(--info-color);
+}
+
+.spinner-light {
+  color: var(--light-color);
+}
+
+.spinner-dark {
+  color: var(--dark-color);
+}
+
+@keyframes spinner-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}

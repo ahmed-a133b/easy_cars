@@ -1,0 +1,53 @@
+.register-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 600px;
+}
+
+.register-card h2 {
+  text-align: center;
+  color: var(--primary-color);
+}
+
+.register-card form {
+  margin-top: 1.5rem;
+}
+
+.register-card .card-footer {
+  text-align: center;
+}
+
+.address-heading {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.address-fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .address-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .register-page {
+    padding: 1rem;
+  }
+
+  .register-card {
+    max-width: 100%;
+  }
+}
