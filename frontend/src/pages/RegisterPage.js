@@ -318,32 +318,63 @@ const RegisterPage = () => {
     return errors
   }
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault()
+
+  //   const errors = validateForm()
+  //   if (Object.keys(errors).length > 0) {
+  //     setFormErrors(errors)
+  //     return
+  //   }
+
+  //   setIsSubmitting(true)
+
+  //   const { confirmPassword, address, ...rest } = formData
+  //   const fullAddress = `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`.trim()
+
+  //   const registerData = {
+  //     ...rest,
+  //     address: fullAddress,
+  //     role: "customer", // Add role explicitly
+  //   }
+
+  //   try {
+  //     await register(registerData)
+  //   } catch (err) {
+  //     setIsSubmitting(false)
+  //   }
+  // }
   const handleSubmit = async (e) => {
     e.preventDefault()
-
+  
     const errors = validateForm()
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors)
       return
     }
-
+  
     setIsSubmitting(true)
-
+  
     const { confirmPassword, address, ...rest } = formData
     const fullAddress = `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`.trim()
-
+  
     const registerData = {
       ...rest,
       address: fullAddress,
       role: "customer", // Add role explicitly
     }
-
+  
+    // Convert formData to JSON using JSON.stringify
+    const jsonData = JSON.stringify(registerData)
+  
     try {
-      await register(registerData)
+      await register(jsonData)  // Assuming register expects a stringified JSON
     } catch (err) {
       setIsSubmitting(false)
     }
   }
+  
+
 
   return (
     <div className="register-page">
