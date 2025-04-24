@@ -30,8 +30,12 @@ const PORT = process.env.PORT || 5000
 app.set('trust proxy', 1);
 
 app.use(express.json())
-app.use(cors())
+
 app.use(rateLimiter)
+
+app.use(cors({
+  origin: 'https://easy-cars-enu6ja8rr-ahmed-a133bs-projects.vercel.app/'
+}));
 
 // Routes
 app.use("/api/auth", authRoutes)
