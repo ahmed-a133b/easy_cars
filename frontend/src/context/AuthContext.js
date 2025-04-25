@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (formData) => {
     try {
       console.log('Registering with:', formData);
-      const res = await api.post("/auth/register", formData)
+      const res = await api.post("/register", formData)
 
       setToken(res.data.token)
       setUser(res.data.user)
