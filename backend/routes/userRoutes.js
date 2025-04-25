@@ -12,7 +12,7 @@ const { adminOnly } = require("../middleware/adminMiddleware")
 
 const router = express.Router()
 
-router.post("/register", register)
+
 router.get("/:id", protect, getUserById)
 router.put("/update-profile", protect, updateProfile)
 router.get("/", protect, adminOnly, getAllUsers)
