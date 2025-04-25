@@ -20,7 +20,7 @@ const ForumPage = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
 
-  const categories = ["General", "Car Reviews", "Buying Advice", "Selling Tips", "Maintenance", "Other"]
+  const categories = ["General", "Question", "Car Reviews", "Buying Advice", "Selling Tips", "Maintenance", "Other"]
 
   // Modified useEffect to fetch posts when selectedCategory changes
   useEffect(() => {

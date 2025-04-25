@@ -26,7 +26,7 @@ const ForumPostPage = () => {
   // For creating a new post
   const [newPostTitle, setNewPostTitle] = useState("")
   const [newPostContent, setNewPostContent] = useState("")
-  const [newPostCategory, setNewPostCategory] = useState("General")
+  const [newPostCategory, setNewPostCategory] = useState("")
   const [newPostTags, setNewPostTags] = useState("")
   const [createPostError, setCreatePostError] = useState("")
 
