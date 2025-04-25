@@ -34,7 +34,7 @@ const ForumPostSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["General", "Question", "Car Reviews", "Buying Advice", "Selling Tips", "Maintenance", "Other"],
+      enum: ["General", "Question", "Discussion", "Announcement", "Car Reviews", "Buying Advice", "Selling Tips", "Maintenance", "Other"],
       default: "General",
     },
     comments: [CommentSchema],
