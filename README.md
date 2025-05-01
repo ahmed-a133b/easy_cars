@@ -4,7 +4,7 @@ Welcome to **Easy Cars**, your one-stop solution for all things related to cars.
 
 ---
 
-## 🚗 Features
+## ℹ️Features
 
 ### 1. **Buy, Rent, and Sell Cars**
    - Browse a wide range of cars available for purchase or rent.
