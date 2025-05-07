@@ -90,7 +90,7 @@ import { Autoplay, Pagination } from "swiper/modules"
 import "swiper/css"
 import "swiper/css/pagination"
 import "./HomePage.css"
-
+import Card from "../components/ui/Card"
 const HomePage = () => {
   const { user } = useContext(AuthContext)
   const [featuredCars, setFeaturedCars] = useState([])

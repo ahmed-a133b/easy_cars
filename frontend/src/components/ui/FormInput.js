@@ -14,6 +14,11 @@ const FormInput = ({
   required = false,
   disabled = false,
   className = "",
+  pattern,
+  minLength,
+  maxLength,
+  min,
+  max,
   ...rest
 }) => {
   return (
@@ -34,6 +39,11 @@ const FormInput = ({
         required={required}
         disabled={disabled}
         className={`form-input ${error ? "form-input-error" : ""}`}
+        pattern={pattern}
+        minLength={minLength}
+        maxLength={maxLength}
+        min={min}
+        max={max}
         {...rest}
       />
       {error && <div className="form-error">{error}</div>}

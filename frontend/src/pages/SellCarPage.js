@@ -28,6 +28,7 @@ const SellCarPage = () => {
   const [formData, setFormData] = useState({
     paymentMethod: "credit_card",
   })
+  const [formErrors, setFormErrors] = useState({})
 
   useEffect(() => {
     if (!carId) {
@@ -64,10 +65,33 @@ const SellCarPage = () => {
       ...formData,
       [e.target.name]: e.target.value,
     })
+    
+    // Clear error for this field when user starts typing
+    if (formErrors[e.target.name]) {
+      setFormErrors({ ...formErrors, [e.target.name]: "" })
+    }
+  }
+
+  const validateForm = () => {
+    const errors = {}
+    
+    // Validate payment method
+    if (!formData.paymentMethod) {
+      errors.paymentMethod = "Payment method is required"
+    }
+    
+    return errors
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    // Validate form
+    const errors = validateForm()
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors)
+      return
+    }
 
     setSubmitting(true)
     setError("")
@@ -164,7 +188,7 @@ const SellCarPage = () => {
                 ) : (
                   <>
                     {error && <Alert message={error} type="error" onClose={() => setError("")} />}
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} noValidate>
                       <div className="form-group">
                         <label htmlFor="paymentMethod">Payment Method</label>
                         <select
@@ -172,7 +196,8 @@ const SellCarPage = () => {
                           name="paymentMethod"
                           value={formData.paymentMethod}
                           onChange={handleChange}
-                          className="form-select"
+                          className={`form-select ${formErrors.paymentMethod ? "form-select-error" : ""}`}
+                          required
                         >
                           <option value="credit_card">Credit Card</option>
                           <option value="debit_card">Debit Card</option>
@@ -180,6 +205,7 @@ const SellCarPage = () => {
                           <option value="financing">Financing</option>
                           <option value="cash">Cash</option>
                         </select>
+                        {formErrors.paymentMethod && <div className="form-error">{formErrors.paymentMethod}</div>}
                       </div>
 
                       <div className="purchase-summary">

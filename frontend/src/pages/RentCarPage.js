@@ -28,6 +28,7 @@ const RentCarPage = () => {
     endDate: "",
     paymentMethod: "credit_card",
   })
+  const [formErrors, setFormErrors] = useState({})
 
   const [rentalSummary, setRentalSummary] = useState({
     days: 0,
@@ -110,24 +111,58 @@ const RentCarPage = () => {
       ...formData,
       [e.target.name]: e.target.value,
     })
+    
+    // Clear error for this field when user starts typing
+    if (formErrors[e.target.name]) {
+      setFormErrors({ ...formErrors, [e.target.name]: "" })
+    }
   }
 
+  const validateForm = () => {
+    const errors = {}
+    // Validate start date
+    if (!formData.startDate) {
+      errors.startDate = "Start date is required"
+    } else {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const startDate = new Date(formData.startDate)
+      if (startDate < today) {
+        errors.startDate = "Start date cannot be in the past"
+      }
+    }
+    
+    // Validate end date
+    if (!formData.endDate) {
+      errors.endDate = "End date is required"
+    } else if (formData.startDate) {
+      const start = new Date(formData.startDate)
+      const end = new Date(formData.endDate)
+      if (end <= start) {
+        errors.endDate = "End date must be after start date"
+      }
+    }
+    
+    // Validate payment method
+    if (!formData.paymentMethod) {
+      errors.paymentMethod = "Payment method is required"
+    }
+    
+    return errors
+  }
+  
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!formData.startDate || !formData.endDate) {
-      setError("Please select both start and end dates.")
+    // Validate form
+    const errors = validateForm()
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors)
       return
     }
 
-    const start = new Date(formData.startDate)
-    const end = new Date(formData.endDate)
-
-    if (end <= start) {
-      setError("End date must be after start date.")
-      return
-    }
-
+    // Start and end date already validated in validateForm()
+    
     setSubmitting(true)
     setError("")
 
@@ -222,7 +257,7 @@ const RentCarPage = () => {
                 ) : (
                   <>
                     {error && <Alert message={error} type="error" onClose={() => setError("")} />}
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} noValidate>
                       <div className="form-row">
                         <FormInput
                           label="Start Date"
@@ -233,6 +268,19 @@ const RentCarPage = () => {
                           onChange={handleChange}
                           min={new Date().toISOString().split("T")[0]}
                           required
+                          error={formErrors.startDate}
+                          onBlur={() => {
+                            if (!formData.startDate) {
+                              setFormErrors({...formErrors, startDate: "Start date is required"})
+                            } else {
+                              const today = new Date()
+                              today.setHours(0, 0, 0, 0)
+                              const startDate = new Date(formData.startDate)
+                              if (startDate < today) {
+                                setFormErrors({...formErrors, startDate: "Start date cannot be in the past"})
+                              }
+                            }
+                          }}
                         />
                         <FormInput
                           label="End Date"
@@ -243,6 +291,18 @@ const RentCarPage = () => {
                           onChange={handleChange}
                           min={formData.startDate || new Date().toISOString().split("T")[0]}
                           required
+                          error={formErrors.endDate}
+                          onBlur={() => {
+                            if (!formData.endDate) {
+                              setFormErrors({...formErrors, endDate: "End date is required"})
+                            } else if (formData.startDate) {
+                              const start = new Date(formData.startDate)
+                              const end = new Date(formData.endDate)
+                              if (end <= start) {
+                                setFormErrors({...formErrors, endDate: "End date must be after start date"})
+                              }
+                            }
+                          }}
                         />
                       </div>
 
@@ -253,12 +313,14 @@ const RentCarPage = () => {
                           name="paymentMethod"
                           value={formData.paymentMethod}
                           onChange={handleChange}
-                          className="form-select"
+                          className={`form-select ${formErrors.paymentMethod ? "form-select-error" : ""}`}
+                          required
                         >
                           <option value="credit_card">Credit Card</option>
                           <option value="debit_card">Debit Card</option>
                           <option value="paypal">PayPal</option>
                         </select>
+                        {formErrors.paymentMethod && <div className="form-error">{formErrors.paymentMethod}</div>}
                       </div>
 
                       <div className="rental-summary">

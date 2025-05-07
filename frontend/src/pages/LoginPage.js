@@ -51,8 +51,20 @@ const LoginPage = () => {
 
   const validateForm = () => {
     const errors = {}
-    if (!email) errors.email = "Email is required"
-    if (!password) errors.password = "Password is required"
+    // Email validation
+    if (!email) {
+      errors.email = "Email is required"
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "Email is invalid"
+    }
+    
+    // Password validation
+    if (!password) {
+      errors.password = "Password is required"
+    } else if (password.length < 6) {
+      errors.password = "Password must be at least 6 characters"
+    }
+    
     return errors
   }
 
@@ -86,7 +98,7 @@ const LoginPage = () => {
           </CardHeader>
           <CardBody>
             {alertMessage && <Alert message={alertMessage} type={alertType} onClose={() => setAlertMessage("")} />}
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
               <FormInput
                 label="Email"
                 type="email"
@@ -97,6 +109,14 @@ const LoginPage = () => {
                 onChange={handleChange}
                 error={formErrors.email}
                 required
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                onBlur={(e) => {
+                  if (!e.target.value) {
+                    setFormErrors({...formErrors, email: "Email is required"})
+                  } else if (!/\S+@\S+\.\S+/.test(e.target.value)) {
+                    setFormErrors({...formErrors, email: "Email is invalid"})
+                  }
+                }}
               />
               <FormInput
                 label="Password"
@@ -108,6 +128,14 @@ const LoginPage = () => {
                 onChange={handleChange}
                 error={formErrors.password}
                 required
+                minLength={6}
+                onBlur={(e) => {
+                  if (!e.target.value) {
+                    setFormErrors({...formErrors, password: "Password is required"})
+                  } else if (e.target.value.length < 6) {
+                    setFormErrors({...formErrors, password: "Password must be at least 6 characters"})
+                  }
+                }}
               />
               <Button type="submit" fullWidth disabled={isSubmitting}>
                 {isSubmitting ? "Logging in..." : "Login"}

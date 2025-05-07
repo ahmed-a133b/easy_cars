@@ -8,6 +8,7 @@ const {
   getFeaturedCars,
 } = require("../controllers/carController")
 const { protect, authorize } = require("../middleware/authMiddleware")
+const { validateCarInput } = require("../middleware/validationMiddleware")
 
 const router = express.Router()
 
@@ -15,8 +16,8 @@ router.get("/", getCars)
 router.get("/featured", getFeaturedCars) // moved this ABOVE `/:id`
 router.get("/:id", getCarById)
 
-router.post("/", protect, authorize("dealership_manager", "admin"), createCar)
-router.put("/:id", protect, authorize("dealership_manager", "admin"), updateCar)
+router.post("/", protect, authorize("dealership_manager", "admin"), validateCarInput, createCar)
+router.put("/:id", protect, authorize("dealership_manager", "admin"), validateCarInput, updateCar)
 router.delete("/:id", protect, authorize("dealership_manager", "admin"), deleteCar)
 
 module.exports = router
