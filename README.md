@@ -1,6 +1,6 @@
 # Easy Cars
 
-Welcome to **Easy Cars**, your one-stop solution for all things related to cars. Whether you're looking to buy, rent, or sell a car, or join a community of car enthusiasts, Easy Cars has something for everyone!
+**Welcome to **Easy Cars**, your one-stop solution for all things related to cars. Whether you're looking to buy, rent, or sell a car, or join a community of car enthusiasts, Easy Cars has something for everyone!**
 
 ---
 
