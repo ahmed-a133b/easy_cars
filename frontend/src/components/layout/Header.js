@@ -13,8 +13,8 @@ const Header = () => {
   const { darkMode } = useContext(ThemeContext)
   const history = useHistory()
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     history.push("/")
   }
 

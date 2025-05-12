@@ -89,12 +89,22 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  // Logout user
-  const logout = () => {
-    setToken(null)
-    setUser(null)
-    setIsAuthenticated(false)
-    setError(null)
+  // Logout user - call the logout API endpoint
+  const logout = async () => {
+    try {
+      // Call the logout API endpoint to clear the cookie on the server
+      await api.get("/auth/logout")
+    } catch (err) {
+      console.error("Logout failed", err)
+    } finally {
+      // Clean up local state regardless of API call success
+      setToken(null)
+      setUser(null)
+      setIsAuthenticated(false)
+      setError(null)
+      localStorage.removeItem("token")
+      delete api.defaults.headers.common["Authorization"]
+    }
   }
 
   // Clear any authentication errors

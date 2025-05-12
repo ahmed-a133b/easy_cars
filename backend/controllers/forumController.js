@@ -247,7 +247,7 @@ exports.deletePost = async (req, res) => {
       })
     }
 
-    await post.remove()
+    await ForumPost.deleteOne({ _id: req.params.id });
 
     // Log activity
     await ActivityLog.create({

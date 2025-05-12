@@ -3,8 +3,8 @@ const cors = require("cors")
 const mongoose = require("mongoose")
 const dotenv = require("dotenv")
 const path = require("path")
-
-
+const session = require('express-session')
+const cookieParser = require('cookie-parser')
 
 // Routes
 const authRoutes = require("./routes/authRoutes")
@@ -23,18 +23,11 @@ require("./config/db")
 // Middleware
 const { rateLimiter } = require("./middleware/rateLimiter")
 
-
-
 const app = express()
 const PORT = process.env.PORT || 5000
 
 // Middleware
 app.set('trust proxy', 1);
-
-// app.use(cors({
-//   origin: 'https://easy-cars.vercel.app',
-//   credentials: true
-// }));
 
 const corsOptions = {
   origin: 'https://easy-cars.vercel.app', // Replace with your frontend URL
@@ -42,17 +35,47 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-
-// app.options('*', cors({
-//   origin: 'https://easy-cars.vercel.app',
-//   credentials: true
-// }));
-
 app.use(express.json())
+app.use(cookieParser())
+
+// Session configuration
+const sessionOptions = {
+  secret: process.env.SESSION_SECRET || 'super_secret_session_key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days in milliseconds
+  }
+};
+
+// Only create a MongoDB store if MONGO_URI is available
+if (process.env.MONGO_URI) {
+  // Create MongoDB Atlas session store using mongoose connection
+  const MongoDBStore = require('connect-mongodb-session')(session);
+  const store = new MongoDBStore({
+    uri: process.env.MONGO_URI,
+    collection: 'sessions',
+    expires: 14 * 24 * 60 * 60, // 14 days in seconds
+    connectionOptions: {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  });
+
+  // Handle store errors
+  store.on('error', function(error) {
+    console.log('Session store error:', error);
+  });
+
+  sessionOptions.store = store;
+}
+
+app.use(session(sessionOptions));
 
 app.use(rateLimiter)
-
 
 // Routes
 app.use("/api/auth", authRoutes)

@@ -148,7 +148,7 @@ exports.deleteDealership = async (req, res) => {
     }
 
     // Remove the dealership
-    await dealership.remove()
+    await Dealership.deleteOne({ _id: req.params.id });
 
     // Log activity
     await ActivityLog.create({
