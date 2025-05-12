@@ -8,6 +8,10 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('users');
   const [users, setUsers] = useState([]);
   const [logs, setLogs] = useState([]);
+  const [dealerships, setDealerships] = useState([]);
+  const [forumPosts, setForumPosts] = useState([]);
+  const [sales, setSales] = useState([]);
+  const [rentals, setRentals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -16,6 +20,20 @@ const AdminDashboard = () => {
     startDate: '',
     endDate: '',
   });
+  const [dealershipForm, setDealershipForm] = useState({
+    name: '',
+    address: {
+      street: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      country: '',
+    },
+    phone: '',
+    email: '',
+    description: '',
+  });
+  const [editingDealership, setEditingDealership] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,6 +54,18 @@ const AdminDashboard = () => {
           };
 
           await fetchLogs();
+        } else if (activeTab === 'dealerships') {
+          const res = await api.get('/dealerships');
+          setDealerships(res.data.data);
+        } else if (activeTab === 'forum') {
+          const res = await api.get('/forum');
+          setForumPosts(res.data.data);
+        } else if (activeTab === 'sales') {
+          const res = await api.get('/sales');
+          setSales(res.data.data);
+        } else if (activeTab === 'rentals') {
+          const res = await api.get('/rentals');
+          setRentals(res.data.data);
         }
       } catch (err) {
         setError(`Failed to fetch ${activeTab}. Please try again later.`);
@@ -48,6 +78,7 @@ const AdminDashboard = () => {
     fetchData();
   }, [activeTab, logFilters]);
 
+  // User management
   const handleDeleteUser = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user?')) {
       return;
@@ -64,6 +95,7 @@ const AdminDashboard = () => {
     }
   };
 
+  // Log management
   const handleLogFilterChange = (e) => {
     setLogFilters({
       ...logFilters,
@@ -92,6 +124,160 @@ const AdminDashboard = () => {
     fetchLogs();
   };
 
+  // Dealership management
+  const handleDealershipChange = (e) => {
+    const { name, value } = e.target;
+    
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setDealershipForm({
+        ...dealershipForm,
+        [parent]: {
+          ...dealershipForm[parent],
+          [child]: value,
+        },
+      });
+    } else {
+      setDealershipForm({
+        ...dealershipForm,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleAddDealership = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const res = await api.post('/dealerships', dealershipForm);
+      setSuccess('Dealership added successfully.');
+      setDealerships([...dealerships, res.data.data]);
+      setDealershipForm({
+        name: '',
+        address: {
+          street: '',
+          city: '',
+          state: '',
+          zipCode: '',
+          country: '',
+        },
+        phone: '',
+        email: '',
+        description: '',
+      });
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to add dealership.');
+      console.error(err);
+    }
+  };
+
+  const handleEditDealership = (dealership) => {
+    setEditingDealership(dealership._id);
+    setDealershipForm({
+      name: dealership.name,
+      address: {
+        street: dealership.address.street,
+        city: dealership.address.city,
+        state: dealership.address.state,
+        zipCode: dealership.address.zipCode,
+        country: dealership.address.country,
+      },
+      phone: dealership.phone,
+      email: dealership.email,
+      description: dealership.description || '',
+    });
+  };
+
+  const handleUpdateDealership = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const res = await api.put(`/dealerships/${editingDealership}`, dealershipForm);
+      setSuccess('Dealership updated successfully.');
+      setDealerships(dealerships.map(d => d._id === editingDealership ? res.data.data : d));
+      setEditingDealership(null);
+      setDealershipForm({
+        name: '',
+        address: {
+          street: '',
+          city: '',
+          state: '',
+          zipCode: '',
+          country: '',
+        },
+        phone: '',
+        email: '',
+        description: '',
+      });
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update dealership.');
+      console.error(err);
+    }
+  };
+
+  const handleDeleteDealership = async (dealershipId) => {
+    if (!window.confirm('Are you sure you want to delete this dealership?')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/dealerships/${dealershipId}`);
+      setSuccess('Dealership deleted successfully.');
+      setDealerships(dealerships.filter(d => d._id !== dealershipId));
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete dealership.');
+      console.error(err);
+    }
+  };
+
+  // Forum management
+  const handleDeleteForumPost = async (postId) => {
+    if (!window.confirm('Are you sure you want to delete this forum post?')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/forum/${postId}`);
+      setSuccess('Forum post deleted successfully.');
+      setForumPosts(forumPosts.filter(post => post._id !== postId));
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete forum post.');
+      console.error(err);
+    }
+  };
+
+  // Sales management
+  const handleDeleteSale = async (saleId) => {
+    if (!window.confirm('Are you sure you want to delete this sale record?')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/sales/${saleId}`);
+      setSuccess('Sale record deleted successfully.');
+      setSales(sales.filter(sale => sale._id !== saleId));
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete sale record.');
+      console.error(err);
+    }
+  };
+
+  // Rentals management
+  const handleDeleteRental = async (rentalId) => {
+    if (!window.confirm('Are you sure you want to delete this rental record?')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/rentals/${rentalId}`);
+      setSuccess('Rental record deleted successfully.');
+      setRentals(rentals.filter(rental => rental._id !== rentalId));
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete rental record.');
+      console.error(err);
+    }
+  };
+
   return (
     <div className="admin-dashboard">
       <div className="container">
@@ -106,6 +292,30 @@ const AdminDashboard = () => {
             onClick={() => setActiveTab('users')}
           >
             Users
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'dealerships' ? 'active' : ''}`}
+            onClick={() => setActiveTab('dealerships')}
+          >
+            Dealerships
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'forum' ? 'active' : ''}`}
+            onClick={() => setActiveTab('forum')}
+          >
+            Forum Posts
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'sales' ? 'active' : ''}`}
+            onClick={() => setActiveTab('sales')}
+          >
+            Sales
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'rentals' ? 'active' : ''}`}
+            onClick={() => setActiveTab('rentals')}
+          >
+            Rentals
           </button>
           <button 
             className={`tab-button ${activeTab === 'logs' ? 'active' : ''}`}
@@ -152,6 +362,336 @@ const AdminDashboard = () => {
                             <button 
                               className="button button-danger button-small"
                               onClick={() => handleDeleteUser(user._id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </>
+          ) : activeTab === 'dealerships' ? (
+            <>
+              <h2>Dealership Management</h2>
+              
+              <div className="dealership-form">
+                <h3>{editingDealership ? 'Update Dealership' : 'Add New Dealership'}</h3>
+                <form onSubmit={editingDealership ? handleUpdateDealership : handleAddDealership}>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="name">Dealership Name</label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={dealershipForm.name}
+                        onChange={handleDealershipChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="phone">Phone</label>
+                      <input
+                        type="text"
+                        id="phone"
+                        name="phone"
+                        value={dealershipForm.phone}
+                        onChange={handleDealershipChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="email">Email</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={dealershipForm.email}
+                      onChange={handleDealershipChange}
+                      required
+                    />
+                  </div>
+                  
+                  <h4>Address</h4>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="street">Street</label>
+                      <input
+                        type="text"
+                        id="street"
+                        name="address.street"
+                        value={dealershipForm.address.street}
+                        onChange={handleDealershipChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="city">City</label>
+                      <input
+                        type="text"
+                        id="city"
+                        name="address.city"
+                        value={dealershipForm.address.city}
+                        onChange={handleDealershipChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="state">State</label>
+                      <input
+                        type="text"
+                        id="state"
+                        name="address.state"
+                        value={dealershipForm.address.state}
+                        onChange={handleDealershipChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="zipCode">Zip Code</label>
+                      <input
+                        type="text"
+                        id="zipCode"
+                        name="address.zipCode"
+                        value={dealershipForm.address.zipCode}
+                        onChange={handleDealershipChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="country">Country</label>
+                      <input
+                        type="text"
+                        id="country"
+                        name="address.country"
+                        value={dealershipForm.address.country}
+                        onChange={handleDealershipChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="description">Description</label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      value={dealershipForm.description}
+                      onChange={handleDealershipChange}
+                      rows="3"
+                    />
+                  </div>
+                  
+                  <div className="form-actions">
+                    <button type="submit" className="button button-primary">
+                      {editingDealership ? 'Update Dealership' : 'Add Dealership'}
+                    </button>
+                    {editingDealership && (
+                      <button
+                        type="button"
+                        className="button button-secondary"
+                        onClick={() => {
+                          setEditingDealership(null);
+                          setDealershipForm({
+                            name: '',
+                            address: {
+                              street: '',
+                              city: '',
+                              state: '',
+                              zipCode: '',
+                              country: '',
+                            },
+                            phone: '',
+                            email: '',
+                            description: '',
+                          });
+                        }}
+                      >
+                        Cancel Edit
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </div>
+              
+              <div className="dealerships-list">
+                <h3>Existing Dealerships</h3>
+                {dealerships.length === 0 ? (
+                  <div className="no-data">No dealerships found.</div>
+                ) : (
+                  <table className="dealerships-table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dealerships.map(dealership => (
+                        <tr key={dealership._id}>
+                          <td>{dealership.name}</td>
+                          <td>
+                            {dealership.address.city}, {dealership.address.state}
+                          </td>
+                          <td>
+                            {dealership.phone}<br />
+                            {dealership.email}
+                          </td>
+                          <td>
+                            <div className="dealership-actions">
+                              <button
+                                className="button button-secondary button-small"
+                                onClick={() => handleEditDealership(dealership)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="button button-danger button-small"
+                                onClick={() => handleDeleteDealership(dealership._id)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </>
+          ) : activeTab === 'forum' ? (
+            <>
+              <h2>Forum Posts Management</h2>
+              {forumPosts.length === 0 ? (
+                <div className="no-data">No forum posts found.</div>
+              ) : (
+                <table className="forum-table">
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Category</th>
+                      <th>Author</th>
+                      <th>Posted</th>
+                      <th>Comments</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {forumPosts.map(post => (
+                      <tr key={post._id}>
+                        <td>{post.title}</td>
+                        <td>{post.category}</td>
+                        <td>{post.user?.name || 'Unknown'}</td>
+                        <td>{new Date(post.createdAt).toLocaleDateString()}</td>
+                        <td>{post.comments?.length || 0}</td>
+                        <td>
+                          <div className="post-actions">
+                            <button
+                              className="button button-danger button-small"
+                              onClick={() => handleDeleteForumPost(post._id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </>
+          ) : activeTab === 'sales' ? (
+            <>
+              <h2>Sales Records</h2>
+              {sales.length === 0 ? (
+                <div className="no-data">No sales records found.</div>
+              ) : (
+                <table className="sales-table">
+                  <thead>
+                    <tr>
+                      <th>Car</th>
+                      <th>Customer</th>
+                      <th>Price</th>
+                      <th>Payment Method</th>
+                      <th>Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sales.map(sale => (
+                      <tr key={sale._id}>
+                        <td>
+                          {sale.car ? `${sale.car.make} ${sale.car.model} (${sale.car.year})` : 'Unknown Car'}
+                        </td>
+                        <td>{sale.user?.name || 'Unknown'}</td>
+                        <td>${sale.price?.toLocaleString()}</td>
+                        <td>{sale.paymentMethod}</td>
+                        <td>{new Date(sale.createdAt).toLocaleDateString()}</td>
+                        <td>
+                          <div className="sale-actions">
+                            <button
+                              className="button button-danger button-small"
+                              onClick={() => handleDeleteSale(sale._id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </>
+          ) : activeTab === 'rentals' ? (
+            <>
+              <h2>Rental Records</h2>
+              {rentals.length === 0 ? (
+                <div className="no-data">No rental records found.</div>
+              ) : (
+                <table className="rentals-table">
+                  <thead>
+                    <tr>
+                      <th>Car</th>
+                      <th>Customer</th>
+                      <th>Period</th>
+                      <th>Total Price</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rentals.map(rental => (
+                      <tr key={rental._id}>
+                        <td>
+                          {rental.car ? `${rental.car.make} ${rental.car.model} (${rental.car.year})` : 'Unknown Car'}
+                        </td>
+                        <td>{rental.user?.name || 'Unknown'}</td>
+                        <td>
+                          {new Date(rental.startDate).toLocaleDateString()} - {new Date(rental.endDate).toLocaleDateString()}
+                        </td>
+                        <td>${rental.totalPrice?.toLocaleString()}</td>
+                        <td>
+                          <span className={`rental-status status-${rental.status}`}>
+                            {rental.status}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="rental-actions">
+                            <button
+                              className="button button-danger button-small"
+                              onClick={() => handleDeleteRental(rental._id)}
                             >
                               Delete
                             </button>
@@ -250,18 +790,18 @@ const AdminDashboard = () => {
                       <th>User</th>
                       <th>Action</th>
                       <th>Resource Type</th>
+                      <th>Date</th>
                       <th>IP Address</th>
-                      <th>Timestamp</th>
                     </tr>
                   </thead>
                   <tbody>
                     {logs.map(log => (
                       <tr key={log._id}>
-                        <td>{log.user?.name || 'System'}</td>
+                        <td>{log.user?.name || 'Unknown'}</td>
                         <td>{log.action}</td>
                         <td>{log.resourceType}</td>
+                        <td>{new Date(log.createdAt).toLocaleString()}</td>
                         <td>{log.ipAddress}</td>
-                        <td>{new Date(log.timestamp).toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -272,7 +812,7 @@ const AdminDashboard = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AdminDashboard;
+export default AdminDashboard

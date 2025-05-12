@@ -121,3 +121,53 @@ exports.updateDealership = async (req, res) => {
     })
   }
 }
+
+// @desc    Delete dealership
+// @route   DELETE /api/dealerships/:id
+// @access  Private/Admin
+exports.deleteDealership = async (req, res) => {
+  try {
+    const dealership = await Dealership.findById(req.params.id)
+
+    if (!dealership) {
+      return res.status(404).json({
+        success: false,
+        message: "Dealership not found",
+      })
+    }
+
+    // Check for cars linked to this dealership
+    const cars = await Car.find({ dealership: req.params.id })
+
+    // Update cars to remove dealership reference
+    if (cars.length > 0) {
+      await Car.updateMany(
+        { dealership: req.params.id },
+        { $unset: { dealership: 1 } }
+      )
+    }
+
+    // Remove the dealership
+    await dealership.remove()
+
+    // Log activity
+    await ActivityLog.create({
+      user: req.user.id,
+      action: "Dealership deleted",
+      resourceType: "dealership",
+      resourceId: req.params.id,
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    })
+
+    res.status(200).json({
+      success: true,
+      data: {},
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    })
+  }
+}

@@ -224,3 +224,49 @@ exports.likePost = async (req, res) => {
     })
   }
 }
+
+// @desc    Delete forum post
+// @route   DELETE /api/forum/:id
+// @access  Private/Admin
+exports.deletePost = async (req, res) => {
+  try {
+    const post = await ForumPost.findById(req.params.id)
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      })
+    }
+
+    // Only post creator or admin can delete
+    if (post.user.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(401).json({
+        success: false,
+        message: "Not authorized to delete this post",
+      })
+    }
+
+    await post.remove()
+
+    // Log activity
+    await ActivityLog.create({
+      user: req.user.id,
+      action: "Forum post deleted",
+      resourceType: "forum",
+      resourceId: req.params.id,
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    })
+
+    res.status(200).json({
+      success: true,
+      data: {},
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    })
+  }
+}

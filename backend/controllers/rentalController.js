@@ -221,3 +221,59 @@ exports.cancelRental = async (req, res) => {
     })
   }
 }
+
+// @desc    Delete rental
+// @route   DELETE /api/rentals/:id
+// @access  Private/Admin
+exports.deleteRental = async (req, res) => {
+  try {
+    const rental = await Rental.findById(req.params.id)
+
+    if (!rental) {
+      return res.status(404).json({
+        success: false,
+        message: "Rental record not found",
+      })
+    }
+
+    // Only admin can delete a rental
+    if (req.user.role !== 'admin') {
+      return res.status(401).json({
+        success: false,
+        message: "Not authorized to delete this rental record",
+      })
+    }
+
+    // Get car information before deleting
+    const car = await Car.findById(rental.car)
+
+    // Delete the rental
+    await rental.remove()
+
+    // If the car still exists and the rental was active, update its availability
+    if (car && rental.status === 'active') {
+      car.available = true
+      await car.save()
+    }
+
+    // Log activity
+    await ActivityLog.create({
+      user: req.user.id,
+      action: "Rental deleted",
+      resourceType: "rental",
+      resourceId: req.params.id,
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    })
+
+    res.status(200).json({
+      success: true,
+      data: {},
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    })
+  }
+}
