@@ -237,6 +237,8 @@ const AdminDashboard = () => {
     }
 
     try {
+      console.log(postId);
+      
       await api.delete(`/forum/${postId}`);
       setSuccess('Forum post deleted successfully.');
       setForumPosts(forumPosts.filter(post => post._id !== postId));
