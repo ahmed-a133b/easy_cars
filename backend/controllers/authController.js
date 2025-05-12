@@ -5,10 +5,13 @@ const ActivityLog = require("../models/ActivityLog")
 const sendTokenResponse = (user, statusCode, res) => {
   // Create token
   const token = user.getSignedJwtToken();
+  console.log('Generated JWT token:', token.substring(0, 20) + '...');
 
   try {
     // Ensure JWT_COOKIE_EXPIRE is parsed as an integer
     const days = parseInt(process.env.JWT_COOKIE_EXPIRE || '30', 10);
+    console.log('JWT_COOKIE_EXPIRE value:', process.env.JWT_COOKIE_EXPIRE);
+    console.log('Parsed days value:', days);
     
     // Create an explicit date for the expires option
     const expiryDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
@@ -18,8 +21,11 @@ const sendTokenResponse = (user, statusCode, res) => {
       expires: expiryDate,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
+      path: '/' // Explicitly set path to root
     };
+    
+    console.log('Cookie options:', JSON.stringify(cookieOptions));
 
     // Set session data
     if (res.req.session) {
@@ -29,6 +35,9 @@ const sendTokenResponse = (user, statusCode, res) => {
         email: user.email,
         role: user.role
       };
+      console.log('Session user data set');
+    } else {
+      console.log('Warning: session object not available');
     }
 
     // Log cookie info for debugging
@@ -48,6 +57,8 @@ const sendTokenResponse = (user, statusCode, res) => {
           role: user.role,
         },
       });
+      
+    console.log('Response sent with cookie');
   } catch (error) {
     console.error('Error setting cookie:', error);
     

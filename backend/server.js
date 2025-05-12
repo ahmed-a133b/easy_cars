@@ -29,12 +29,35 @@ const PORT = process.env.PORT || 5000
 // Middleware
 app.set('trust proxy', 1);
 
+// Update CORS options to ensure cookies work properly
 const corsOptions = {
-  origin: 'https://easy-cars.vercel.app', // Replace with your frontend URL
-  credentials: true,
+  origin: true, // Allow requests from any origin in development
+  credentials: true, // This is critical for cookies to work
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 };
 
+// Print CORS configuration for debugging
+console.log('CORS configuration:', JSON.stringify(corsOptions));
+
 app.use(cors(corsOptions));
+
+// Add a middleware to log cookie headers
+app.use((req, res, next) => {
+  console.log('Request cookies:', req.headers.cookie);
+  
+  // Store the original res.json to intercept it
+  const originalJson = res.json;
+  res.json = function(body) {
+    console.log('Response headers:', JSON.stringify(res.getHeaders()));
+    return originalJson.call(this, body);
+  };
+  
+  next();
+});
+
 app.use(express.json())
 app.use(cookieParser())
 
@@ -90,6 +113,24 @@ console.log('Session cookie expires:', sessionOptions.cookie.expires);
 app.use(session(sessionOptions));
 
 app.use(rateLimiter)
+
+// Add test endpoint for cookie
+app.get('/api/test-cookie', (req, res) => {
+  console.log('Test cookie endpoint called');
+  
+  // Set a test cookie
+  res.cookie('testCookie', 'Hello from server', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    expires: new Date(Date.now() + 60 * 1000) // 1 minute
+  });
+  
+  console.log('Test cookie set');
+  console.log('Response headers:', JSON.stringify(res.getHeaders()));
+  
+  res.json({ success: true, message: 'Test cookie set' });
+});
 
 // Routes
 app.use("/api/auth", authRoutes)
