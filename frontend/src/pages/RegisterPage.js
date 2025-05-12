@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useContext, useEffect } from "react"
+import { useState, useContext, useEffect, useCallback } from "react"
 import { Link, useHistory } from "react-router-dom"
 import { AuthContext } from "../context/AuthContext"
 import FormInput from "../components/ui/FormInput"
@@ -35,6 +35,12 @@ const RegisterPage = () => {
 
   const { name, email, password, confirmPassword, phone, address } = formData
 
+  // Clear alert message handler
+  const handleClearAlert = useCallback(() => {
+    setAlertMessage("");
+    setAlertType("");
+  }, []);
+
   // Handle authentication status and redirect
   useEffect(() => {
     if (isAuthenticated) {
@@ -51,11 +57,11 @@ const RegisterPage = () => {
     }
   }, [error])
 
-  // Cleanup effect - only runs on unmount, not every render
+  // Cleanup effect - only runs on unmount
   useEffect(() => {
     return () => {
+      // Only clear context errors on unmount, not the local alert state
       clearError();
-      setAlertMessage("");
     };
   }, [clearError])
 
@@ -91,6 +97,9 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
   
+    // Clear any previous alerts before attempting registration
+    handleClearAlert();
+    
     const errors = validateForm()
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors)
@@ -126,7 +135,14 @@ const RegisterPage = () => {
             <h2>Create an Account</h2>
           </CardHeader>
           <CardBody>
-            {alertMessage && <Alert message={alertMessage} type={alertType} dismissible={true} onClose={() => setAlertMessage("")} />}
+            {alertMessage && (
+              <Alert 
+                message={alertMessage} 
+                type={alertType} 
+                dismissible={true} 
+                onClose={handleClearAlert} 
+              />
+            )}
             <form onSubmit={handleSubmit}>
               <FormInput
                 label="Name"

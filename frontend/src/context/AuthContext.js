@@ -21,6 +21,8 @@ export const AuthProvider = ({ children }) => {
           const res = await api.get("/auth/profile")
           setUser(res.data.data)
           setIsAuthenticated(true)
+          // Clear any auth errors when successfully authenticated
+          setError(null)
         } catch (err) {
           localStorage.removeItem("token")
           setToken(null)
@@ -48,6 +50,9 @@ export const AuthProvider = ({ children }) => {
 
   // Register user
   const register = async (formData) => {
+    // Clear any previous errors before attempting registration
+    setError(null)
+    
     try {
       console.log('Registering with:', formData);
       const res = await api.post("/auth/register", formData)
@@ -56,7 +61,6 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data.user)
       setIsAuthenticated(true)
       setLoading(false)
-      setError(null)
 
       return res.data
     } catch (err) {
@@ -67,6 +71,9 @@ export const AuthProvider = ({ children }) => {
 
   // Login user
   const login = async (formData) => {
+    // Clear any previous errors before attempting login
+    setError(null)
+    
     try {
       const res = await api.post("/auth/login", formData)
 
@@ -74,7 +81,6 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data.user)
       setIsAuthenticated(true)
       setLoading(false)
-      setError(null)
 
       return res.data
     } catch (err) {
@@ -98,11 +104,13 @@ export const AuthProvider = ({ children }) => {
 
   // Update user profile
   const updateProfile = async (formData) => {
+    // Clear any previous errors before attempting profile update
+    setError(null)
+    
     try {
       const res = await api.put("/users/update-profile", formData)
 
       setUser(res.data.data)
-      setError(null)
 
       return res.data
     } catch (err) {

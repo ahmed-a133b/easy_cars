@@ -1,28 +1,44 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import "./Alert.css"
 
 const Alert = ({ message, type = "info", dismissible = true, duration = 0, onClose }) => {
   const [visible, setVisible] = useState(true)
-
+  const timerRef = useRef(null)
+  
+  // Reset the visibility when message changes
   useEffect(() => {
+    // If we get a new message, make sure the alert is visible
+    setVisible(true)
+    
+    // Clear any existing timers
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+    
+    // Only set a timer if duration is positive
     if (duration > 0) {
-      const timer = setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         setVisible(false)
         if (onClose) onClose()
       }, duration)
-
-      return () => clearTimeout(timer)
     }
-  }, [duration, onClose])
-
+    
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+      }
+    }
+  }, [message, duration, onClose])
+  
   const handleClose = () => {
     setVisible(false)
     if (onClose) onClose()
   }
 
-  if (!visible) return null
+  if (!visible || !message) return null
 
   return (
     <div className={`alert alert-${type}`} role="alert">
