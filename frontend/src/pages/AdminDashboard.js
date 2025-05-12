@@ -85,13 +85,18 @@ const AdminDashboard = () => {
     }
 
     try {
-      await api.delete(`/users/${userId}`);
-      setSuccess('User deleted successfully.');
-      const res = await api.get('/users');
-      setUsers(res.data.data);
+      const response = await api.delete(`/users/${userId}`);
+      
+      if (response.data.success) {
+        setSuccess('User deleted successfully.');
+        const res = await api.get('/users');
+        setUsers(res.data.data);
+      } else {
+        setError(response.data.message || 'Failed to delete user.');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete user.');
-      console.error(err);
+      console.error('Delete user error:', err);
     }
   };
 
@@ -221,12 +226,17 @@ const AdminDashboard = () => {
     }
 
     try {
-      await api.delete(`/dealerships/${dealershipId}`);
-      setSuccess('Dealership deleted successfully.');
-      setDealerships(dealerships.filter(d => d._id !== dealershipId));
+      const response = await api.delete(`/dealerships/${dealershipId}`);
+      
+      if (response.data.success) {
+        setSuccess('Dealership deleted successfully.');
+        setDealerships(dealerships.filter(d => d._id !== dealershipId));
+      } else {
+        setError(response.data.message || 'Failed to delete dealership.');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete dealership.');
-      console.error(err);
+      console.error('Delete dealership error:', err);
     }
   };
 
@@ -239,12 +249,17 @@ const AdminDashboard = () => {
     try {
       console.log(postId);
       
-      await api.delete(`/forum/${postId}`);
-      setSuccess('Forum post deleted successfully.');
-      setForumPosts(forumPosts.filter(post => post._id !== postId));
+      const response = await api.delete(`/forum/${postId}`);
+      
+      if (response.data.success) {
+        setSuccess('Forum post deleted successfully.');
+        setForumPosts(forumPosts.filter(post => post._id !== postId));
+      } else {
+        setError(response.data.message || 'Failed to delete forum post.');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete forum post.');
-      console.error(err);
+      console.error('Delete forum post error:', err);
     }
   };
 
@@ -255,12 +270,17 @@ const AdminDashboard = () => {
     }
 
     try {
-      await api.delete(`/sales/${saleId}`);
-      setSuccess('Sale record deleted successfully.');
-      setSales(sales.filter(sale => sale._id !== saleId));
+      const response = await api.delete(`/sales/${saleId}`);
+      
+      if (response.data.success) {
+        setSuccess('Sale record deleted successfully.');
+        setSales(sales.filter(sale => sale._id !== saleId));
+      } else {
+        setError(response.data.message || 'Failed to delete sale record.');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete sale record.');
-      console.error(err);
+      console.error('Delete sale error:', err);
     }
   };
 
@@ -271,12 +291,17 @@ const AdminDashboard = () => {
     }
 
     try {
-      await api.delete(`/rentals/${rentalId}`);
-      setSuccess('Rental record deleted successfully.');
-      setRentals(rentals.filter(rental => rental._id !== rentalId));
+      const response = await api.delete(`/rentals/${rentalId}`);
+      
+      if (response.data.success) {
+        setSuccess('Rental record deleted successfully.');
+        setRentals(rentals.filter(rental => rental._id !== rentalId));
+      } else {
+        setError(response.data.message || 'Failed to delete rental record.');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete rental record.');
-      console.error(err);
+      console.error('Delete rental error:', err);
     }
   };
 
