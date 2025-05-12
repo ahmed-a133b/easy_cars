@@ -26,26 +26,30 @@ const LoginPage = () => {
 
   const { email, password } = formData
 
+  // Handle authentication status and redirect
   useEffect(() => {
-    // If already authenticated, redirect
     if (isAuthenticated) {
       const { from } = location.state || { from: { pathname: "/" } }
       history.push(from)
     }
+  }, [isAuthenticated, history, location])
 
-    // Show error if any
+  // Handle error display - separate from cleanup
+  useEffect(() => {
     if (error) {
       setAlertMessage(error)
       setAlertType("error")
       setIsSubmitting(false)
     }
+  }, [error])
 
-    // Cleanup function to clear errors when component unmounts
+  // Cleanup effect - only runs on unmount, not every render
+  useEffect(() => {
     return () => {
       clearError();
       setAlertMessage("");
     };
-  }, [isAuthenticated, error, history, location, clearError])
+  }, [clearError])
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -103,7 +107,7 @@ const LoginPage = () => {
             <h2>Login to Your Account</h2>
           </CardHeader>
           <CardBody>
-            {alertMessage && <Alert message={alertMessage} type={alertType} onClose={() => setAlertMessage("")} />}
+            {alertMessage && <Alert message={alertMessage} type={alertType} dismissible={true} onClose={() => setAlertMessage("")} />}
             <form onSubmit={handleSubmit} noValidate>
               <FormInput
                 label="Email"

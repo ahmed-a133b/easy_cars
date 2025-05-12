@@ -25,10 +25,14 @@ const Alert = ({ message, type = "info", dismissible = true, duration = 0, onClo
   if (!visible) return null
 
   return (
-    <div className={`alert alert-${type}`}>
+    <div className={`alert alert-${type}`} role="alert">
       <div className="alert-content">{message}</div>
       {dismissible && (
-        <button className="alert-close" onClick={handleClose}>
+        <button 
+          className="alert-close" 
+          onClick={handleClose}
+          aria-label="Close alert"
+        >
           &times;
         </button>
       )}

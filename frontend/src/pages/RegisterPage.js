@@ -35,23 +35,29 @@ const RegisterPage = () => {
 
   const { name, email, password, confirmPassword, phone, address } = formData
 
+  // Handle authentication status and redirect
   useEffect(() => {
     if (isAuthenticated) {
       history.push("/")
     }
+  }, [isAuthenticated, history])
 
+  // Handle error display - separate from cleanup
+  useEffect(() => {
     if (error) {
       setAlertMessage(error)
       setAlertType("error")
       setIsSubmitting(false)
     }
+  }, [error])
 
-    // Cleanup function to clear errors when component unmounts
+  // Cleanup effect - only runs on unmount, not every render
+  useEffect(() => {
     return () => {
       clearError();
       setAlertMessage("");
     };
-  }, [isAuthenticated, error, history, clearError])
+  }, [clearError])
 
   const handleChange = (e) => {
     if (e.target.name.includes(".")) {
@@ -112,8 +118,6 @@ const RegisterPage = () => {
     }
   }
   
-
-
   return (
     <div className="register-page">
       <div className="container">
@@ -122,7 +126,7 @@ const RegisterPage = () => {
             <h2>Create an Account</h2>
           </CardHeader>
           <CardBody>
-            {alertMessage && <Alert message={alertMessage} type={alertType} onClose={() => setAlertMessage("")} />}
+            {alertMessage && <Alert message={alertMessage} type={alertType} dismissible={true} onClose={() => setAlertMessage("")} />}
             <form onSubmit={handleSubmit}>
               <FormInput
                 label="Name"
