@@ -169,7 +169,7 @@ exports.deleteCar = async (req, res) => {
       })
     }
 
-    await car.remove()
+    await Car.deleteOne({ _id: req.params.id });
 
     // Log activity
     await ActivityLog.create({

@@ -248,7 +248,7 @@ exports.deleteRental = async (req, res) => {
     const car = await Car.findById(rental.car)
 
     // Delete the rental
-    await rental.remove()
+    await Rental.deleteOne({ _id: req.params.id });
 
     // If the car still exists and the rental was active, update its availability
     if (car && rental.status === 'active') {

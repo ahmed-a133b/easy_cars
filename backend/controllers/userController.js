@@ -108,7 +108,7 @@ exports.deleteUser = async (req, res) => {
       })
     }
 
-    await user.remove()
+    await User.deleteOne({ _id: req.params.id });
 
     // Log activity
     await ActivityLog.create({

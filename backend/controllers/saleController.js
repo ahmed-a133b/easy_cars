@@ -126,7 +126,7 @@ exports.deleteSale = async (req, res) => {
     const car = await Car.findById(sale.car)
 
     // Delete the sale
-    await sale.remove()
+    await Sale.deleteOne({ _id: req.params.id });
 
     // If the car still exists, update its availability
     if (car) {
