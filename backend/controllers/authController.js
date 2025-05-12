@@ -8,7 +8,8 @@ const sendTokenResponse = (user, statusCode, res) => {
 
   // Set cookie options
   const cookieOptions = {
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
+    // Instead of using expires, use maxAge which is more reliable
+    maxAge: process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000, // Convert days to milliseconds
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict'
@@ -147,9 +148,9 @@ exports.login = async (req, res) => {
 // @access  Private
 exports.logout = async (req, res) => {
   try {
-    // Clear the cookie
+    // Clear the cookie - use maxAge instead of expires
     res.cookie('token', 'none', {
-      expires: new Date(Date.now() + 10 * 1000), // Expires in 10 seconds
+      maxAge: 10 * 1000, // Expires in 10 seconds
       httpOnly: true
     });
 

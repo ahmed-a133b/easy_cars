@@ -58,6 +58,7 @@ if (process.env.MONGO_URI) {
   const store = new MongoDBStore({
     uri: process.env.MONGO_URI,
     collection: 'sessions',
+    // Use cookie maxAge for session expiry
     expires: 14 * 24 * 60 * 60, // 14 days in seconds
     connectionOptions: {
       useNewUrlParser: true,
