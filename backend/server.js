@@ -47,32 +47,45 @@ const sessionOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
-    maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days in milliseconds
+    expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 14 days from now
   }
 };
 
 // Only create a MongoDB store if MONGO_URI is available
 if (process.env.MONGO_URI) {
-  // Create MongoDB Atlas session store using mongoose connection
-  const MongoDBStore = require('connect-mongodb-session')(session);
-  const store = new MongoDBStore({
-    uri: process.env.MONGO_URI,
-    collection: 'sessions',
-    // Use cookie maxAge for session expiry
-    expires: 14 * 24 * 60 * 60, // 14 days in seconds
-    connectionOptions: {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  });
+  try {
+    // Create MongoDB Atlas session store using mongoose connection
+    const MongoDBStore = require('connect-mongodb-session')(session);
+    
+    // Calculate expiration in seconds for MongoDB store
+    const twoWeeksInSeconds = 14 * 24 * 60 * 60; // 14 days
+    
+    const store = new MongoDBStore({
+      uri: process.env.MONGO_URI,
+      collection: 'sessions',
+      expires: twoWeeksInSeconds,
+      connectionOptions: {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
+    });
 
-  // Handle store errors
-  store.on('error', function(error) {
-    console.log('Session store error:', error);
-  });
+    // Handle store errors
+    store.on('error', function(error) {
+      console.log('Session store error:', error);
+    });
 
-  sessionOptions.store = store;
+    sessionOptions.store = store;
+    
+    console.log('MongoDB session store configured');
+  } catch (error) {
+    console.error('Error setting up session store:', error);
+    // Continue without a persistent store - will use memory store
+  }
 }
+
+// Log session options for debugging
+console.log('Session cookie expires:', sessionOptions.cookie.expires);
 
 app.use(session(sessionOptions));
 

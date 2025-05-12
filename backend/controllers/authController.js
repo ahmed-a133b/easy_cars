@@ -6,30 +6,53 @@ const sendTokenResponse = (user, statusCode, res) => {
   // Create token
   const token = user.getSignedJwtToken();
 
-  // Set cookie options
-  const cookieOptions = {
-    // Instead of using expires, use maxAge which is more reliable
-    maxAge: process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000, // Convert days to milliseconds
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
-  };
-
-  // Set session data
-  if (res.req.session) {
-    res.req.session.user = {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role
+  try {
+    // Ensure JWT_COOKIE_EXPIRE is parsed as an integer
+    const days = parseInt(process.env.JWT_COOKIE_EXPIRE || '30', 10);
+    
+    // Create an explicit date for the expires option
+    const expiryDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+    
+    // Set cookie options - use expires instead of maxAge
+    const cookieOptions = {
+      expires: expiryDate,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
     };
-  }
 
-  // Send response with cookie
-  res
-    .status(statusCode)
-    .cookie('token', token, cookieOptions)
-    .json({
+    // Set session data
+    if (res.req.session) {
+      res.req.session.user = {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      };
+    }
+
+    // Log cookie info for debugging
+    console.log('Setting cookie with expiry:', expiryDate);
+
+    // Send response with cookie
+    res
+      .status(statusCode)
+      .cookie('token', token, cookieOptions)
+      .json({
+        success: true,
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
+  } catch (error) {
+    console.error('Error setting cookie:', error);
+    
+    // Fallback to just sending the response without a cookie
+    res.status(statusCode).json({
       success: true,
       token,
       user: {
@@ -39,6 +62,7 @@ const sendTokenResponse = (user, statusCode, res) => {
         role: user.role,
       },
     });
+  }
 };
 
 // @desc    Register user
@@ -148,15 +172,22 @@ exports.login = async (req, res) => {
 // @access  Private
 exports.logout = async (req, res) => {
   try {
-    // Clear the cookie - use maxAge instead of expires
+    // Use explicit date for expires rather than maxAge
+    const expiryDate = new Date(Date.now() + 10 * 1000); // 10 seconds from now
+    
+    // Clear the cookie
     res.cookie('token', 'none', {
-      maxAge: 10 * 1000, // Expires in 10 seconds
+      expires: expiryDate,
       httpOnly: true
     });
 
     // Clear the session
     if (req.session) {
-      req.session.destroy();
+      req.session.destroy(err => {
+        if (err) {
+          console.error('Error destroying session:', err);
+        }
+      });
     }
 
     res.status(200).json({
@@ -164,6 +195,7 @@ exports.logout = async (req, res) => {
       data: {}
     });
   } catch (error) {
+    console.error('Logout error:', error);
     res.status(500).json({
       success: false,
       message: error.message
