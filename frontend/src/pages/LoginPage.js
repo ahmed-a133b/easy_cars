@@ -20,7 +20,7 @@ const LoginPage = () => {
   const [alertType, setAlertType] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const { login, isAuthenticated, error } = useContext(AuthContext)
+  const { login, isAuthenticated, error, clearError } = useContext(AuthContext)
   const history = useHistory()
   const location = useLocation()
 
@@ -39,7 +39,13 @@ const LoginPage = () => {
       setAlertType("error")
       setIsSubmitting(false)
     }
-  }, [isAuthenticated, error, history, location])
+
+    // Cleanup function to clear errors when component unmounts
+    return () => {
+      clearError();
+      setAlertMessage("");
+    };
+  }, [isAuthenticated, error, history, location, clearError])
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })

@@ -91,6 +91,11 @@ export const AuthProvider = ({ children }) => {
     setError(null)
   }
 
+  // Clear any authentication errors
+  const clearError = () => {
+    setError(null)
+  }
+
   // Update user profile
   const updateProfile = async (formData) => {
     try {
@@ -118,6 +123,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         updateProfile,
+        clearError,
       }}
     >
       {children}
