@@ -1,6 +1,45 @@
 const User = require("../models/User")
 const ActivityLog = require("../models/ActivityLog")
 
+// Helper function to send token response with cookie
+const sendTokenResponse = (user, statusCode, res) => {
+  // Create token
+  const token = user.getSignedJwtToken();
+
+  // Set cookie options
+  const cookieOptions = {
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict'
+  };
+
+  // Set session data
+  if (res.req.session) {
+    res.req.session.user = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    };
+  }
+
+  // Send response with cookie
+  res
+    .status(statusCode)
+    .cookie('token', token, cookieOptions)
+    .json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+};
+
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
@@ -38,19 +77,8 @@ exports.register = async (req, res) => {
       userAgent: req.headers["user-agent"],
     })
 
-    // Generate token
-    const token = user.getSignedJwtToken()
-
-    res.status(201).json({
-      success: true,
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    })
+    // Send token response with cookie
+    sendTokenResponse(user, 201, res);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -104,19 +132,8 @@ exports.login = async (req, res) => {
       userAgent: req.headers["user-agent"],
     })
 
-    // Generate token
-    const token = user.getSignedJwtToken()
-
-    res.status(200).json({
-      success: true,
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    })
+    // Send token response with cookie
+    sendTokenResponse(user, 200, res);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -124,6 +141,34 @@ exports.login = async (req, res) => {
     })
   }
 }
+
+// @desc    Logout user / clear cookie
+// @route   GET /api/auth/logout
+// @access  Private
+exports.logout = async (req, res) => {
+  try {
+    // Clear the cookie
+    res.cookie('token', 'none', {
+      expires: new Date(Date.now() + 10 * 1000), // Expires in 10 seconds
+      httpOnly: true
+    });
+
+    // Clear the session
+    if (req.session) {
+      req.session.destroy();
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {}
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
 // @desc    Get current logged in user
 // @route   GET /api/auth/profile
