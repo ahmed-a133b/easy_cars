@@ -326,4 +326,25 @@ exports.getBinaryImage = async (req, res) => {
   }
 };
 
+// @desc    Get user's car listings
+// @route   GET /api/cars/my-listings
+// @access  Private
+exports.getMyListings = async (req, res) => {
+  try {
+    // Find cars where the user is associated with the dealership
+    const cars = await Car.find({ dealership: req.user.dealership }).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: cars.length,
+      data: cars,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 

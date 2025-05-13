@@ -7,7 +7,8 @@ const {
   deleteCar,
   getFeaturedCars,
   addBinaryImageToCar,
-  getBinaryImage
+  getBinaryImage,
+  getMyListings
 } = require("../controllers/carController")
 const { protect, authorize } = require("../middleware/authMiddleware")
 const { validateCarInput } = require("../middleware/validationMiddleware")
@@ -16,6 +17,7 @@ const router = express.Router()
 
 router.get("/", getCars)
 router.get("/featured", getFeaturedCars) // moved this ABOVE `/:id`
+router.get("/my-listings", protect, getMyListings)
 router.get("/images/:imageId", getBinaryImage) // Retrieves binary image by ID
 router.get("/:id", getCarById)
 

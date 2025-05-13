@@ -61,6 +61,20 @@
   margin-bottom: 0;
 }
 
+.create-listing-btn {
+  min-width: 140px;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.create-listing-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
 .no-listings {
   text-align: center;
   padding: 3rem;
@@ -69,15 +83,24 @@
   margin-bottom: 1rem;
 }
 
+.first-listing-btn {
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+  min-width: 250px;
+}
+
 .car-listings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
 }
 
 .car-listing-card {
   height: 100%;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .car-listing-card:hover {
@@ -91,7 +114,7 @@
 
 .car-img-container {
   position: relative;
-  height: 180px;
+  height: 200px;
   overflow: hidden;
   border-top-left-radius: var(--border-radius);
   border-top-right-radius: var(--border-radius);
@@ -155,6 +178,15 @@
   color: #f8d7da;
 }
 
+.car-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .car-info {
   margin-top: 0.5rem;
 }
@@ -164,17 +196,49 @@
   font-size: 0.9rem;
 }
 
-.listing-actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+.card-actions-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
 }
 
-.listing-actions a,
-.listing-actions button {
+.listing-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.action-link {
   flex: 1;
   min-width: min-content;
-  text-align: center;
+}
+
+.action-button {
+  width: 100%;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0.5rem;
+}
+
+.button-icon {
+  margin-right: 0.25rem;
+  font-size: 1rem;
+}
+
+.view-button:hover {
+  background-color: var(--primary-hover-color);
+}
+
+.edit-button:hover {
+  background-color: var(--secondary-hover-color);
+  color: var(--secondary-color);
+}
+
+.delete-button:hover {
+  opacity: 0.85;
 }
 
 /* New Listing Tab */
@@ -282,15 +346,27 @@
 }
 
 .form-actions button {
-  min-width: 120px;
+  min-width: 150px;
+  font-weight: 500;
 }
 
 /* Responsive Styles */
+@media (max-width: 992px) {
+  .car-listings-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .tab-header {
     flex-direction: column;
     gap: 1rem;
     align-items: flex-start;
+  }
+  
+  .create-listing-btn {
+    align-self: flex-end;
+    max-width: 140px;
   }
   
   .form-row {
@@ -304,9 +380,25 @@
   
   .listing-actions {
     flex-direction: column;
+    gap: 0.75rem;
   }
   
   .form-actions {
     flex-direction: column;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-tabs {
+    flex-direction: column;
+  }
+  
+  .tab-button {
+    width: 100%;
+    text-align: center;
   }
 } 

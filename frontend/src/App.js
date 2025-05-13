@@ -16,6 +16,7 @@ import ForumPostPage from "./pages/ForumPostPage"
 import DealershipsPage from "./pages/DealershipsPage"
 import AdminDashboard from "./pages/AdminDashboard"
 import UserDashboard from "./pages/UserDashboard"
+import EditCarPage from "./pages/EditCarPage"
 import ProtectedRoute from "./routes/ProtectedRoute"
 import AdminRoute from "./routes/AdminRoute"
 import "./App.css"
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/register" component={RegisterPage} />
                 <ProtectedRoute path="/profile" component={ProfilePage} />
                 <ProtectedRoute path="/dashboard" component={UserDashboard} />
+                <ProtectedRoute path="/edit-car/:id" component={EditCarPage} />
                 <Route path="/cars" exact component={CarListingsPage} />
                 <Route path="/cars/:id" exact component={CarDetailPage} />
                 <ProtectedRoute path="/rent/:id" component={RentCarPage} />

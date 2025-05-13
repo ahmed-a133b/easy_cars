@@ -274,8 +274,10 @@ const UserDashboard = () => {
                 <Button 
                   onClick={() => setActiveTab('new-listing')}
                   className="create-listing-btn"
+                  size="small"
+                  variant="primary"
                 >
-                  Create New Listing
+                  + Create Listing
                 </Button>
               </div>
 
@@ -286,7 +288,11 @@ const UserDashboard = () => {
               ) : myListings.length === 0 ? (
                 <div className="no-listings">
                   <p>You don't have any car listings yet.</p>
-                  <Button onClick={() => setActiveTab('new-listing')}>
+                  <Button 
+                    onClick={() => setActiveTab('new-listing')}
+                    size="large"
+                    className="first-listing-btn"
+                  >
                     Create Your First Listing
                   </Button>
                 </div>
@@ -307,27 +313,32 @@ const UserDashboard = () => {
                         </div>
                       </div>
                       <CardBody>
-                        <h3>{car.make} {car.model} ({car.year})</h3>
+                        <h3 className="car-title">{car.make} {car.model} ({car.year})</h3>
                         <div className="car-info">
                           <p><strong>Price:</strong> {formatPrice(car.price)}</p>
                           <p><strong>Color:</strong> {car.color}</p>
                           <p><strong>Mileage:</strong> {car.mileage.toLocaleString()} miles</p>
                         </div>
                       </CardBody>
-                      <CardFooter>
+                      <CardFooter className="card-actions-footer">
                         <div className="listing-actions">
-                          <Link to={`/cars/${car._id}`}>
-                            <Button variant="outline" size="small">View</Button>
+                          <Link to={`/cars/${car._id}`} className="action-link">
+                            <Button variant="primary" size="medium" className="action-button view-button">
+                              <span className="button-icon">👁️</span> View
+                            </Button>
                           </Link>
-                          <Link to={`/edit-car/${car._id}`}>
-                            <Button variant="outline" size="small">Edit</Button>
+                          <Link to={`/edit-car/${car._id}`} className="action-link">
+                            <Button variant="outline" size="medium" className="action-button edit-button">
+                              <span className="button-icon">✏️</span> Edit
+                            </Button>
                           </Link>
                           <Button 
                             variant="danger" 
-                            size="small" 
+                            size="medium" 
                             onClick={() => handleDeleteListing(car._id)}
+                            className="action-button delete-button"
                           >
-                            Delete
+                            <span className="button-icon">🗑️</span> Delete
                           </Button>
                         </div>
                       </CardFooter>

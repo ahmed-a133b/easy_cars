@@ -30,10 +30,10 @@ const PORT = process.env.PORT || 5000
 // Middleware
 app.set('trust proxy', 1);
 
-// Update CORS options to ensure cookies work properly
+
 const corsOptions = {
-  origin: true, // Allow requests from any origin in development
-  credentials: true, // This is critical for cookies to work
+  origin: true,
+  credentials: true, 
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   preflightContinue: false,
