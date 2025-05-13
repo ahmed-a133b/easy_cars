@@ -46,6 +46,11 @@ const Header = () => {
                   <Link to="/admin">👮Admin</Link>
                 </li>
               )}
+              {isAuthenticated && (
+                <li>
+                  <Link to="/dashboard">🔍Dashboard</Link>
+                </li>
+              )}
             </ul>
           </nav>
           <div className="header-actions">
@@ -55,9 +60,16 @@ const Header = () => {
                 <Link to="/profile" className="user-profile">
                   {user?.name}
                 </Link>
-                <Button variant="secondary" size="small" onClick={handleLogout}>
-                  Logout
-                </Button>
+                <div className="user-menu-actions">
+                  <Link to="/dashboard">
+                    <Button variant="outline" size="small">
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Button variant="secondary" size="small" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="auth-buttons">

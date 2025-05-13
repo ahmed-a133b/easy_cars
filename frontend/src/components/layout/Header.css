@@ -84,11 +84,18 @@
   display: flex;
   align-items: center;
   margin-left: 1rem;
+  flex-direction: column;
 }
 
 .user-profile {
   margin-right: 1rem;
   font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.user-menu-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .auth-buttons {
@@ -153,6 +160,14 @@
   .user-menu {
     margin-top: 0.5rem;
     margin-left: 0;
+    align-items: flex-end;
+  }
+
+  .user-menu-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+    width: 100%;
   }
 
   .auth-buttons {

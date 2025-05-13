@@ -15,6 +15,7 @@ const saleRoutes = require("./routes/saleRoutes")
 const forumRoutes = require("./routes/forumRoutes")
 const logRoutes = require("./routes/logRoutes")
 const dealershipRoutes = require("./routes/dealershipRoutes")
+const uploadRoutes = require("./routes/uploadRoutes")
 
 // Config
 dotenv.config()
@@ -141,6 +142,7 @@ app.use("/api/sales", saleRoutes)
 app.use("/api/forum", forumRoutes)
 app.use("/api/logs", logRoutes)
 app.use("/api/dealerships", dealershipRoutes)
+app.use("/api/upload", uploadRoutes)
 
 // Serve static assets in production
 if (process.env.NODE_ENV === "production") {
