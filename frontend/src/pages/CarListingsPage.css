@@ -88,8 +88,19 @@
 
 .filter-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   margin-top: 1rem;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.filter-buttons button {
+  flex: 1;
+  min-width: min-content;
+  text-align: center;
+  white-space: nowrap;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .checkbox-group {
@@ -151,17 +162,24 @@
   transform: scale(1.05);
 }
 
-.car-badge {
+.car-badges-container {
   position: absolute;
   top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.car-badge {
   padding: 0.25rem 0.5rem;
   border-radius: 50px;
   font-size: 0.75rem;
   font-weight: 500;
+  margin-bottom: 5px;
 }
 
 .rent-badge {
-  right: 10px;
   background-color: #d1ecf1;
   color: #0c5460;
 }
@@ -172,7 +190,6 @@
 }
 
 .sale-badge {
-  left: 10px;
   background-color: #d4edda;
   color: #155724;
 }
@@ -180,6 +197,16 @@
 .dark-mode .sale-badge {
   background-color: rgba(46, 204, 113, 0.2);
   color: #d4edda;
+}
+
+.unavailable-badge {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.dark-mode .unavailable-badge {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #f8d7da;
 }
 
 .car-details {
@@ -217,6 +244,18 @@
   display: flex;
   justify-content: center;
   padding: 3rem;
+}
+
+.car-card h3 {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  color: var(--body-color);
+  font-weight: 600;
+}
+
+.car-card .card-body {
+  padding: 1rem;
 }
 
 @media (max-width: 992px) {

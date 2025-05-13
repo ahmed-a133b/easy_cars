@@ -36,7 +36,7 @@ const CarListingsPage = () => {
       const fetchCars = async () => {
         setLoading(true)
         try {
-          const params = { ...updatedFilters }
+          const params = { ...updatedFilters, available: true }
           Object.keys(params).forEach(
             (key) => (params[key] === "" || params[key] === false) && delete params[key]
           )
@@ -69,7 +69,7 @@ const CarListingsPage = () => {
   const fetchFilteredCars = async (params) => {
     setLoading(true)
     try {
-      const filtered = { ...params }
+      const filtered = { ...params, available: true }
       Object.keys(filtered).forEach(
         (key) => (filtered[key] === "" || filtered[key] === false) && delete filtered[key]
       )
@@ -206,8 +206,11 @@ const CarListingsPage = () => {
                 <Card key={car._id} className="car-card">
                   <div className="car-image">
                     <img src={car.images[0] || "/placeholder-car.jpg"} alt={`${car.make} ${car.model}`} />
-                    {car.forRent && <span className="car-badge rent-badge">For Rent</span>}
-                    {car.forSale && <span className="car-badge sale-badge">For Sale</span>}
+                    <div className="car-badges-container">
+                      {car.forSale && <span className="car-badge sale-badge">For Sale</span>}
+                      {car.forRent && <span className="car-badge rent-badge">For Rent</span>}
+                      {!car.available && <span className="car-badge unavailable-badge">Unavailable</span>}
+                    </div>
                   </div>
                   <CardBody>
                     <h3>{`${car.make} ${car.model} (${car.year})`}</h3>

@@ -52,10 +52,19 @@
   padding: 1rem;
   background-color: rgba(0, 0, 0, 0.03);
   border-top: 1px solid var(--border-color);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .dark-mode .card-footer {
   background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Make sure any button containers in footer have proper spacing */
+.card-footer > div {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 @media (max-width: 768px) {
