@@ -59,15 +59,28 @@ const CarListingsPage = () => {
   
   // Check if current user is the owner of the car
   const isOwner = (car) => {
-    if (!isAuthenticated || !user || !car || !car.owner) {
-      console.log("Missing data for owner check:", { isAuthenticated, userId: user?.id, carOwnerId: car?.owner });
+    try {
+      if (!isAuthenticated || !user || !car) {
+        return false;
+      }
+
+      // Car might not have owner field or user might not have id
+      if (!car.owner || !user.id) {
+        return false;
+      }
+      
+      // Handle both populated owner object and owner ID string
+      const ownerId = typeof car.owner === 'object' ? car.owner._id : car.owner;
+      
+      // Safely convert to strings for comparison
+      const ownerIdStr = String(ownerId);
+      const userIdStr = String(user.id);
+      
+      return ownerIdStr === userIdStr;
+    } catch (err) {
+      console.error("Error checking car ownership:", err);
       return false;
     }
-    
-    // Handle both populated owner object and owner ID string
-    const ownerId = typeof car.owner === 'object' ? car.owner._id : car.owner;
-    console.log("Comparing user ID and car owner:", { userId: user.id, carOwnerId: ownerId });
-    return ownerId.toString() === user.id.toString();
   }
 
   const handleFilterChange = (e) => {

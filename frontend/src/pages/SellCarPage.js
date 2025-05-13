@@ -49,11 +49,24 @@ const SellCarPage = () => {
         }
 
         // Check if user is the owner of the car
-        const ownerId = typeof carData.owner === 'object' ? carData.owner._id : carData.owner;
-        if (ownerId && ownerId.toString() === user.id.toString()) {
-          setError("You cannot purchase your own listing.")
-          setLoading(false)
-          return
+        try {
+          // Car might not have owner field or user might not have id
+          if (carData.owner && user.id) {
+            // Handle both populated owner object and owner ID string
+            const ownerId = typeof carData.owner === 'object' ? carData.owner._id : carData.owner;
+            
+            // Safely convert to strings for comparison
+            const ownerIdStr = String(ownerId);
+            const userIdStr = String(user.id);
+            
+            if (ownerIdStr === userIdStr) {
+              setError("You cannot purchase your own listing.");
+              setLoading(false);
+              return;
+            }
+          }
+        } catch (err) {
+          console.error("Error checking car ownership:", err);
         }
 
         setCar(carData)
