@@ -150,7 +150,7 @@ const CarListingsPage = () => {
                       id="minPrice"
                       name="minPrice"
                       value={filters.minPrice}
-                      placeholder="Min $"
+                      placeholder="Min"
                       onChange={handleFilterChange}
                     />
                     <FormInput
@@ -159,7 +159,7 @@ const CarListingsPage = () => {
                       id="maxPrice"
                       name="maxPrice"
                       value={filters.maxPrice}
-                      placeholder="Max $"
+                      placeholder="Max"
                       onChange={handleFilterChange}
                     />
                   </div>
