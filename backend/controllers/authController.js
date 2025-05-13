@@ -5,30 +5,65 @@ const ActivityLog = require("../models/ActivityLog")
 const sendTokenResponse = (user, statusCode, res) => {
   // Create token
   const token = user.getSignedJwtToken();
+  console.log('Generated JWT token:', token.substring(0, 20) + '...');
 
-  // Set cookie options
-  const cookieOptions = {
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
-  };
-
-  // Set session data
-  if (res.req.session) {
-    res.req.session.user = {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role
+  try {
+    // Ensure JWT_COOKIE_EXPIRE is parsed as an integer
+    const days = parseInt(process.env.JWT_COOKIE_EXPIRE || '30', 10);
+    console.log('JWT_COOKIE_EXPIRE value:', process.env.JWT_COOKIE_EXPIRE);
+    console.log('Parsed days value:', days);
+    
+    // Create an explicit date for the expires option
+    const expiryDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+    
+    // Set cookie options - use expires instead of maxAge
+    const cookieOptions = {
+      expires: expiryDate,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
+      path: '/' // Explicitly set path to root
     };
-  }
+    
+    console.log('Cookie options:', JSON.stringify(cookieOptions));
 
-  // Send response with cookie
-  res
-    .status(statusCode)
-    .cookie('token', token, cookieOptions)
-    .json({
+    // Set session data
+    if (res.req.session) {
+      res.req.session.user = {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      };
+      console.log('Session user data set');
+    } else {
+      console.log('Warning: session object not available');
+    }
+
+    // Log cookie info for debugging
+    console.log('Setting cookie with expiry:', expiryDate);
+
+    // Send response with cookie
+    res
+      .status(statusCode)
+      .cookie('token', token, cookieOptions)
+      .json({
+        success: true,
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
+      
+    console.log('Response sent with cookie');
+  } catch (error) {
+    console.error('Error setting cookie:', error);
+    
+    // Fallback to just sending the response without a cookie
+    res.status(statusCode).json({
       success: true,
       token,
       user: {
@@ -38,6 +73,7 @@ const sendTokenResponse = (user, statusCode, res) => {
         role: user.role,
       },
     });
+  }
 };
 
 // @desc    Register user
@@ -147,15 +183,22 @@ exports.login = async (req, res) => {
 // @access  Private
 exports.logout = async (req, res) => {
   try {
+    // Use explicit date for expires rather than maxAge
+    const expiryDate = new Date(Date.now() + 10 * 1000); // 10 seconds from now
+    
     // Clear the cookie
     res.cookie('token', 'none', {
-      expires: new Date(Date.now() + 10 * 1000), // Expires in 10 seconds
+      expires: expiryDate,
       httpOnly: true
     });
 
     // Clear the session
     if (req.session) {
-      req.session.destroy();
+      req.session.destroy(err => {
+        if (err) {
+          console.error('Error destroying session:', err);
+        }
+      });
     }
 
     res.status(200).json({
@@ -163,6 +206,7 @@ exports.logout = async (req, res) => {
       data: {}
     });
   } catch (error) {
+    console.error('Logout error:', error);
     res.status(500).json({
       success: false,
       message: error.message

@@ -29,12 +29,35 @@ const PORT = process.env.PORT || 5000
 // Middleware
 app.set('trust proxy', 1);
 
+// Update CORS options to ensure cookies work properly
 const corsOptions = {
-  origin: 'https://easy-cars.vercel.app', // Replace with your frontend URL
-  credentials: true,
+  origin: true, // Allow requests from any origin in development
+  credentials: true, // This is critical for cookies to work
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 };
 
+// Print CORS configuration for debugging
+console.log('CORS configuration:', JSON.stringify(corsOptions));
+
 app.use(cors(corsOptions));
+
+// Add a middleware to log cookie headers
+app.use((req, res, next) => {
+  console.log('Request cookies:', req.headers.cookie);
+  
+  // Store the original res.json to intercept it
+  const originalJson = res.json;
+  res.json = function(body) {
+    console.log('Response headers:', JSON.stringify(res.getHeaders()));
+    return originalJson.call(this, body);
+  };
+  
+  next();
+});
+
 app.use(express.json())
 app.use(cookieParser())
 
@@ -47,35 +70,67 @@ const sessionOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
-    maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days in milliseconds
+    expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 14 days from now
   }
 };
 
 // Only create a MongoDB store if MONGO_URI is available
 if (process.env.MONGO_URI) {
-  // Create MongoDB Atlas session store using mongoose connection
-  const MongoDBStore = require('connect-mongodb-session')(session);
-  const store = new MongoDBStore({
-    uri: process.env.MONGO_URI,
-    collection: 'sessions',
-    expires: 14 * 24 * 60 * 60, // 14 days in seconds
-    connectionOptions: {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  });
+  try {
+    // Create MongoDB Atlas session store using mongoose connection
+    const MongoDBStore = require('connect-mongodb-session')(session);
+    
+    // Calculate expiration in seconds for MongoDB store
+    const twoWeeksInSeconds = 14 * 24 * 60 * 60; // 14 days
+    
+    const store = new MongoDBStore({
+      uri: process.env.MONGO_URI,
+      collection: 'sessions',
+      expires: twoWeeksInSeconds,
+      connectionOptions: {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
+    });
 
-  // Handle store errors
-  store.on('error', function(error) {
-    console.log('Session store error:', error);
-  });
+    // Handle store errors
+    store.on('error', function(error) {
+      console.log('Session store error:', error);
+    });
 
-  sessionOptions.store = store;
+    sessionOptions.store = store;
+    
+    console.log('MongoDB session store configured');
+  } catch (error) {
+    console.error('Error setting up session store:', error);
+    // Continue without a persistent store - will use memory store
+  }
 }
+
+// Log session options for debugging
+console.log('Session cookie expires:', sessionOptions.cookie.expires);
 
 app.use(session(sessionOptions));
 
 app.use(rateLimiter)
+
+// Add test endpoint for cookie
+app.get('/api/test-cookie', (req, res) => {
+  console.log('Test cookie endpoint called');
+  
+  // Set a test cookie
+  res.cookie('testCookie', 'Hello from server', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    expires: new Date(Date.now() + 60 * 1000) // 1 minute
+  });
+  
+  console.log('Test cookie set');
+  console.log('Response headers:', JSON.stringify(res.getHeaders()));
+  
+  res.json({ success: true, message: 'Test cookie set' });
+});
 
 // Routes
 app.use("/api/auth", authRoutes)
