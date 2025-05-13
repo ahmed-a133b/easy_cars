@@ -48,6 +48,14 @@ const SellCarPage = () => {
           return
         }
 
+        // Check if user is the owner of the car
+        const ownerId = typeof carData.owner === 'object' ? carData.owner._id : carData.owner;
+        if (ownerId && ownerId.toString() === user.id.toString()) {
+          setError("You cannot purchase your own listing.")
+          setLoading(false)
+          return
+        }
+
         setCar(carData)
       } catch (err) {
         setError("Failed to fetch car details. Please try again later.")
@@ -58,7 +66,7 @@ const SellCarPage = () => {
     }
 
     fetchCarDetails()
-  }, [carId])
+  }, [carId, user.id])
 
   const handleChange = (e) => {
     setFormData({

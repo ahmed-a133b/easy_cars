@@ -209,6 +209,16 @@
   color: #f8d7da;
 }
 
+.owner-badge {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.dark-mode .owner-badge {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #fff3cd;
+}
+
 .car-details {
   margin-bottom: 1rem;
   color: var(--body-color);
@@ -256,6 +266,17 @@
 
 .car-card .card-body {
   padding: 1rem;
+}
+
+.car-actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.car-actions-container a {
+  display: block;
+  width: 100%;
 }
 
 @media (max-width: 992px) {

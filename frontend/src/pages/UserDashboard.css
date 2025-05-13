@@ -163,6 +163,16 @@
   color: #721c24;
 }
 
+.owner-badge {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.dark-mode .owner-badge {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #fff3cd;
+}
+
 .dark-mode .sale-badge {
   background-color: rgba(46, 204, 113, 0.2);
   color: #d4edda;

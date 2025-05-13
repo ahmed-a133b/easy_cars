@@ -310,6 +310,7 @@ const UserDashboard = () => {
                           {car.forSale && <span className="car-badge sale-badge">For Sale</span>}
                           {car.forRent && <span className="car-badge rent-badge">For Rent</span>}
                           {!car.available && <span className="car-badge unavailable-badge">Unavailable</span>}
+                          <span className="car-badge owner-badge">Your Listing</span>
                         </div>
                       </div>
                       <CardBody>

@@ -29,7 +29,9 @@ exports.getCars = async (req, res) => {
     if (forRent === "true") query.forRent = true
     if (forSale === "true") query.forSale = true
 
-    const cars = await Car.find(query).populate("dealership")
+    const cars = await Car.find(query)
+      .populate("dealership")
+      .populate("owner", "name email _id");
 
     res.status(200).json({
       success: true,
@@ -49,7 +51,9 @@ exports.getCars = async (req, res) => {
 // @access  Public
 exports.getCarById = async (req, res) => {
   try {
-    const car = await Car.findById(req.params.id).populate("dealership")
+    const car = await Car.findById(req.params.id)
+      .populate("dealership")
+      .populate("owner", "name email _id");
 
     if (!car) {
       return res.status(404).json({

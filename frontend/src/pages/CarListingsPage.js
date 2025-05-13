@@ -1,6 +1,6 @@
 "use client"
 import api from "../api"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { Link, useLocation } from "react-router-dom"
 import axios from "axios"
 import Card from "../components/ui/Card"
@@ -8,9 +8,11 @@ import { CardBody } from "../components/ui/Card"
 import Button from "../components/ui/Button"
 import FormInput from "../components/ui/FormInput"
 import Spinner from "../components/ui/Spinner"
+import { AuthContext } from "../context/AuthContext"
 import "./CarListingsPage.css"
 
 const CarListingsPage = () => {
+  const { user, isAuthenticated } = useContext(AuthContext)
   const [cars, setCars] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
@@ -55,8 +57,18 @@ const CarListingsPage = () => {
     })
   }, [location.search])
   
-
-
+  // Check if current user is the owner of the car
+  const isOwner = (car) => {
+    if (!isAuthenticated || !user || !car || !car.owner) {
+      console.log("Missing data for owner check:", { isAuthenticated, userId: user?.id, carOwnerId: car?.owner });
+      return false;
+    }
+    
+    // Handle both populated owner object and owner ID string
+    const ownerId = typeof car.owner === 'object' ? car.owner._id : car.owner;
+    console.log("Comparing user ID and car owner:", { userId: user.id, carOwnerId: ownerId });
+    return ownerId.toString() === user.id.toString();
+  }
 
   const handleFilterChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -86,12 +98,23 @@ const CarListingsPage = () => {
 
   const handleFilterSubmit = (e) => {
     e.preventDefault()
-    setFilters((prevFilters) => {
-      const updatedFilters = { ...prevFilters }
-      fetchFilteredCars(updatedFilters)
-      return updatedFilters
-    })
+    applyFilters()
+  }
+
+  const applyFilters = () => {
+    const params = new URLSearchParams()
+
+    if (filters.make) params.append("make", filters.make)
+    if (filters.model) params.append("model", filters.model)
+    if (filters.minPrice) params.append("minPrice", filters.minPrice)
+    if (filters.maxPrice) params.append("maxPrice", filters.maxPrice)
+    if (filters.forRent) params.append("forRent", filters.forRent)
+    if (filters.forSale) params.append("forSale", filters.forSale)
+
+    window.history.pushState({}, "", `${window.location.pathname}?${params.toString()}`)
     
+    // Trigger the useEffect to refetch cars
+    location.search = params.toString()
   }
 
   const clearFilters = () => {
@@ -103,15 +126,11 @@ const CarListingsPage = () => {
       forRent: false,
       forSale: false,
     })
-    fetchFilteredCars({
-      make: "",
-      model: "",
-      minPrice: "",
-      maxPrice: "",
-      forRent: false,
-      forSale: false,
-    })
     
+    window.history.pushState({}, "", window.location.pathname)
+    
+    // Trigger the useEffect to refetch cars
+    location.search = ""
   }
 
   return (
@@ -166,19 +185,26 @@ const CarListingsPage = () => {
 
                   <div className="checkbox-group">
                     <label className="checkbox-label">
-                      <input type="checkbox" name="forRent" checked={filters.forRent} onChange={handleFilterChange} />
-                      Available for Rent
+                      <input
+                        type="checkbox"
+                        name="forSale"
+                        checked={filters.forSale}
+                        onChange={handleFilterChange}
+                      />
+                      For Sale
                     </label>
-                  </div>
-
-                  <div className="checkbox-group">
                     <label className="checkbox-label">
-                      <input type="checkbox" name="forSale" checked={filters.forSale} onChange={handleFilterChange} />
-                      Available for Sale
+                      <input
+                        type="checkbox"
+                        name="forRent"
+                        checked={filters.forRent}
+                        onChange={handleFilterChange}
+                      />
+                      For Rent
                     </label>
                   </div>
 
-                  <div className="filter-buttons">
+                  <div className="filter-actions">
                     <Button type="submit">Apply Filters</Button>
                     <Button type="button" variant="secondary" onClick={clearFilters}>
                       Clear Filters
@@ -210,6 +236,7 @@ const CarListingsPage = () => {
                       {car.forSale && <span className="car-badge sale-badge">For Sale</span>}
                       {car.forRent && <span className="car-badge rent-badge">For Rent</span>}
                       {!car.available && <span className="car-badge unavailable-badge">Unavailable</span>}
+                      {isOwner(car) && <span className="car-badge owner-badge">Your Listing</span>}
                     </div>
                   </div>
                   <CardBody>
@@ -240,9 +267,16 @@ const CarListingsPage = () => {
                         </p>
                       )}
                     </div>
-                    <Link to={`/cars/${car._id}`}>
-                      <Button fullWidth>View Details</Button>
-                    </Link>
+                    <div className="car-actions-container">
+                      <Link to={`/cars/${car._id}`}>
+                        <Button variant="primary" fullWidth>View Details</Button>
+                      </Link>
+                      {isAuthenticated && car.forSale && car.available && !isOwner(car) && (
+                        <Link to={`/sell?carId=${car._id}`}>
+                          <Button variant="success" fullWidth>Buy Now</Button>
+                        </Link>
+                      )}
+                    </div>
                   </CardBody>
                 </Card>
               ))

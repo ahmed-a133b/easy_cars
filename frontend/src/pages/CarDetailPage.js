@@ -13,7 +13,7 @@ import "./CarDetailPage.css"
 const CarDetailPage = () => {
   const { id } = useParams()
   const history = useHistory()
-  const { isAuthenticated } = useContext(AuthContext)
+  const { isAuthenticated, user } = useContext(AuthContext)
 
   const [car, setCar] = useState(null)
   const [dealership, setDealership] = useState(null)
@@ -25,6 +25,7 @@ const CarDetailPage = () => {
     const fetchCarDetails = async () => {
       try {
         const res = await api.get(`/cars/${id}`)
+        console.log("Car data received:", res.data.data);
         setCar(res.data.data)
         setDealership(res.data.data.dealership)
       } catch (err) {
@@ -52,6 +53,19 @@ const CarDetailPage = () => {
     } else {
       history.push("/login", { from: `/sell?carId=${id}` })
     }
+  }
+
+  // Check if current user is the owner of the car
+  const isOwner = () => {
+    if (!isAuthenticated || !user || !car || !car.owner) {
+      console.log("Missing data for owner check:", { isAuthenticated, userId: user?.id, carOwnerId: car?.owner });
+      return false;
+    }
+    
+    // Handle both populated owner object and owner ID string
+    const ownerId = typeof car.owner === 'object' ? car.owner._id : car.owner;
+    console.log("Comparing user ID and car owner:", { userId: user.id, carOwnerId: ownerId });
+    return ownerId.toString() === user.id.toString();
   }
 
   if (loading) {
@@ -189,7 +203,8 @@ const CarDetailPage = () => {
               <CardFooter>
                 <div className="car-actions">
                   {car.forRent && car.available && <Button onClick={handleRentClick}>Rent This Car</Button>}
-                  {car.forSale && car.available && <Button onClick={handleBuyClick}>Buy This Car</Button>}
+                  {car.forSale && car.available && !isOwner() && <Button onClick={handleBuyClick}>Buy This Car</Button>}
+                  {isOwner() && <Button variant="outline">Your Listing</Button>}
                   <Link to="/cars">
                     <Button variant="secondary">Back to Listings</Button>
                   </Link>
