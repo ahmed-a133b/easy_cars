@@ -40,6 +40,7 @@
   display: flex;
   align-items: center;
   cursor: pointer;
+  color: var(--body-color);
 }
 
 .checkbox-label input {
@@ -56,6 +57,21 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: var(--body-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.car-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .car-card:hover {
+  box-shadow: 0 10px 20px rgba(255, 255, 255, 0.05);
 }
 
 .car-image {
@@ -90,14 +106,25 @@
   color: #0c5460;
 }
 
+.dark-mode .rent-badge {
+  background-color: rgba(52, 152, 219, 0.2);
+  color: #d1ecf1;
+}
+
 .sale-badge {
   left: 10px;
   background-color: #d4edda;
   color: #155724;
 }
 
+.dark-mode .sale-badge {
+  background-color: rgba(46, 204, 113, 0.2);
+  color: #d4edda;
+}
+
 .car-details {
   margin-bottom: 1rem;
+  color: var(--body-color);
 }
 
 .car-details p {
@@ -122,6 +149,7 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 3rem;
+  color: var(--body-color);
 }
 
 .spinner-container {

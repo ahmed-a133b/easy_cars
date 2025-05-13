@@ -155,11 +155,12 @@
 }
 
 .car-card {
-  background: #fff;
+  background: var(--body-bg);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--box-shadow);
   transition: transform 0.3s ease;
+  border: 1px solid var(--border-color);
 }
 
 .car-card:hover {
@@ -180,6 +181,11 @@
 .car-info h3 {
   margin: 0.5rem 0;
   font-size: 1.1rem;
+  color: var(--body-color);
+}
+
+.car-info p {
+  color: var(--gray-color);
 }
 
 .swiper-pagination-bullet {
