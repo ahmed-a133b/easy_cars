@@ -142,14 +142,15 @@ const CarDetailPage = () => {
             <Card>
               <CardHeader>
                 <h1>{`${car.make} ${car.model} (${car.year})`}</h1>
-                <div className="car-badges">
+              </CardHeader>
+              <CardBody>
+                <div className="car-badges-centered">
                   {car.forRent && car.available && <span className="car-badge rent-badge">For Rent</span>}
                   {car.forSale && car.available && <span className="car-badge sale-badge">For Sale</span>}
                   {!car.available && <span className="car-badge unavailable-badge">Unavailable</span>}
                   {isOwner() && <span className="car-badge owner-badge">Your Listing</span>}
                 </div>
-              </CardHeader>
-              <CardBody>
+
                 <div className="car-specs">
                   <div className="spec-item">
                     <span className="spec-label">Color</span>

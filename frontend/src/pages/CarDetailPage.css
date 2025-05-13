@@ -212,6 +212,14 @@
   margin-top: 1rem;
 }
 
+.car-badges-centered {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 992px) {
   .car-detail-content {
     grid-template-columns: 1fr;

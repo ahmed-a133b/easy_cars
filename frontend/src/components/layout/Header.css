@@ -68,11 +68,20 @@
   color: var(--body-color);
   text-decoration: none;
   font-weight: 500;
-  transition: var(--transition);
+  display: block;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .nav-links a:hover {
   color: var(--primary-color);
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+}
+
+.nav-links a.active {
+  background-color: var(--primary-color);
+  color: white;
 }
 
 .header-actions {
@@ -112,42 +121,96 @@
   display: none;
   background: none;
   border: none;
-  font-size: 1.5rem;
   cursor: pointer;
   color: var(--body-color);
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  z-index: 1001;
+}
+
+.menu-icon {
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.menu-icon.open {
+  transform: rotate(90deg);
+}
+
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @media (max-width: 992px) {
-  .nav {
-    display: none;
+  .header-content {
+    justify-content: space-between;
   }
-
+  
+  .logo {
+    z-index: 1001;
+  }
+  
   .menu-toggle {
     display: block;
+    order: -1; /* Puts the toggle on the left side */
   }
-
-  .header-content {
-    flex-wrap: wrap;
+  
+  .nav {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px;
+    background-color: var(--body-bg);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 4rem 1rem 2rem 1rem;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(-100%);
+    overflow-y: auto;
   }
-
+  
   .nav.active {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin-top: 1rem;
+    transform: translateX(0);
   }
-
+  
+  .dark .nav {
+    box-shadow: 2px 0 5px rgba(255, 255, 255, 0.1);
+  }
+  
   .nav-links {
     flex-direction: column;
     width: 100%;
   }
-
+  
   .nav-links li {
-    margin: 0.5rem 0;
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
   }
-
+  
+  .nav-links li:last-child {
+    border-bottom: none;
+  }
+  
   .header-actions {
     margin-left: auto;
+    z-index: 1001;
   }
 }
 

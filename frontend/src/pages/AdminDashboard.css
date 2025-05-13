@@ -113,14 +113,24 @@
   color: #d4edda;
 }
 
-.role-dealership_manager {
+.role-user {
   background-color: #d1ecf1;
   color: #0c5460;
 }
 
-.dark-mode .role-dealership_manager {
+.dark-mode .role-user {
   background-color: rgba(52, 152, 219, 0.2);
   color: #d1ecf1;
+}
+
+.role-dealership_manager {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.dark-mode .role-dealership_manager {
+  background-color: rgba(243, 156, 18, 0.2);
+  color: #fff3cd;
 }
 
 .role-customer {
@@ -204,10 +214,22 @@
 .button-danger {
   background-color: #dc3545;
   color: white;
+  border: none;
 }
 
 .button-danger:hover {
-  background-color: #c82333;
+  background-color: #bd2130;
+}
+
+.button-danger:disabled {
+  background-color: #e9acb2;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.dark-mode .button-danger:disabled {
+  background-color: #723338;
+  opacity: 0.6;
 }
 
 .button-small {
@@ -397,6 +419,14 @@
   display: flex;
   gap: 0.5rem;
   margin-top: 1rem;
+  width: 100%;
+}
+
+.filter-buttons button {
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 /* Responsive adjustments */
@@ -430,4 +460,32 @@
     display: block;
     overflow-x: auto;
   }
+}
+
+/* Current user highlight */
+.current-user-row {
+  background-color: rgba(0, 123, 255, 0.05) !important;
+}
+
+.current-user-row:hover {
+  background-color: rgba(0, 123, 255, 0.1) !important;
+}
+
+.dark-mode .current-user-row {
+  background-color: rgba(0, 123, 255, 0.15) !important;
+}
+
+.dark-mode .current-user-row:hover {
+  background-color: rgba(0, 123, 255, 0.2) !important;
+}
+
+.current-user-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.4rem;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
 }

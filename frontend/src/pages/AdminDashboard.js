@@ -1,10 +1,12 @@
 "use client"
 import api from "../api"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import axios from "axios"
+import { AuthContext } from "../context/AuthContext"
 import "./AdminDashboard.css"
 
 const AdminDashboard = () => {
+  const { user: currentUser } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('users');
   const [users, setUsers] = useState([]);
   const [logs, setLogs] = useState([]);
@@ -80,6 +82,12 @@ const AdminDashboard = () => {
 
   // User management
   const handleDeleteUser = async (userId) => {
+    // Prevent deleting the current admin user
+    if (currentUser && String(userId) === String(currentUser.id)) {
+      setError('You cannot delete your own account.');
+      return;
+    }
+    
     if (!window.confirm('Are you sure you want to delete this user?')) {
       return;
     }
@@ -375,8 +383,8 @@ const AdminDashboard = () => {
                   </thead>
                   <tbody>
                     {users.map(user => (
-                      <tr key={user._id}>
-                        <td>{user.name}</td>
+                      <tr key={user._id} className={currentUser && String(user._id) === String(currentUser.id) ? "current-user-row" : ""}>
+                        <td>{user.name} {currentUser && String(user._id) === String(currentUser.id) && <span className="current-user-badge">(You)</span>}</td>
                         <td>{user.email}</td>
                         <td>
                           <span className={`user-role role-${user.role}`}>
@@ -389,6 +397,8 @@ const AdminDashboard = () => {
                             <button 
                               className="button button-danger button-small"
                               onClick={() => handleDeleteUser(user._id)}
+                              disabled={currentUser && String(user._id) === String(currentUser.id)}
+                              title={currentUser && String(user._id) === String(currentUser.id) ? "You cannot delete your own account" : "Delete this user"}
                             >
                               Delete
                             </button>

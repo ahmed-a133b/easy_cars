@@ -118,6 +118,20 @@
   margin-right: 0.5rem;
 }
 
+.filter-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.filter-actions button {
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  white-space: nowrap;
+}
+
 .car-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -300,6 +314,10 @@
   }
 
   .filter-buttons {
+    flex-direction: column;
+  }
+  
+  .filter-actions {
     flex-direction: column;
   }
 }
