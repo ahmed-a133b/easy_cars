@@ -13,8 +13,16 @@
   overflow: hidden;
 }
 
+.card form {
+  width: 100%;
+}
+
 .card:hover {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.dark-mode .card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.05);
 }
 
 .card-header {
@@ -31,6 +39,8 @@
 .card-body {
   flex: 1 1 auto;
   padding: 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .card-footer {

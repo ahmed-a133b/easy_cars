@@ -1,11 +1,13 @@
 .form-group {
   margin-bottom: 1rem;
+  width: 100%;
 }
 
 .form-label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  color: var(--body-color);
 }
 
 .form-input {
@@ -20,6 +22,7 @@
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   transition: var(--transition);
+  box-sizing: border-box;
 }
 
 .form-input:focus {
@@ -67,6 +70,7 @@
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 16px 12px;
+  box-sizing: border-box;
 }
 
 .form-select:focus {
@@ -90,6 +94,7 @@
   transition: var(--transition);
   resize: vertical;
   min-height: 100px;
+  box-sizing: border-box;
 }
 
 .form-textarea:focus {

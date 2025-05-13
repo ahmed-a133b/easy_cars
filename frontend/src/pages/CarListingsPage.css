@@ -18,6 +18,41 @@
   position: sticky;
   top: 100px;
   height: fit-content;
+  width: 100%;
+}
+
+.filters-sidebar .card {
+  overflow: visible;
+}
+
+.filters-sidebar h2 {
+  margin-bottom: 1.5rem;
+  color: var(--dark-color);
+}
+
+.filters-sidebar .form-input {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background-color: var(--body-bg);
+  color: var(--body-color);
+  border-color: var(--border-color);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.filters-sidebar input[type="number"] {
+  background-color: var(--body-bg);
+  color: var(--body-color);
+  border-color: var(--border-color);
+}
+
+.dark-mode .filters-sidebar input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.dark-mode .filter-buttons button {
+  margin-bottom: 0.5rem;
 }
 
 .price-range {
