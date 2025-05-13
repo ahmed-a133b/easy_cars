@@ -64,6 +64,10 @@ const CarSchema = new mongoose.Schema(
     dealership: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Dealership",
+    },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
     createdAt: {

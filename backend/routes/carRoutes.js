@@ -16,14 +16,14 @@ const { validateCarInput } = require("../middleware/validationMiddleware")
 const router = express.Router()
 
 router.get("/", getCars)
-router.get("/featured", getFeaturedCars) // moved this ABOVE `/:id`
+router.get("/featured", getFeaturedCars)
 router.get("/my-listings", protect, getMyListings)
-router.get("/images/:imageId", getBinaryImage) // Retrieves binary image by ID
+router.get("/images/:imageId", getBinaryImage)
 router.get("/:id", getCarById)
 
-router.post("/", protect, authorize("dealership_manager", "admin"), validateCarInput, createCar)
-router.post("/:id/images", protect, authorize("dealership_manager", "admin"), addBinaryImageToCar)
-router.put("/:id", protect, authorize("dealership_manager", "admin"), validateCarInput, updateCar)
-router.delete("/:id", protect, authorize("dealership_manager", "admin"), deleteCar)
+router.post("/", protect, validateCarInput, createCar)
+router.post("/:id/images", protect, addBinaryImageToCar)
+router.put("/:id", protect, validateCarInput, updateCar)
+router.delete("/:id", protect, deleteCar)
 
 module.exports = router

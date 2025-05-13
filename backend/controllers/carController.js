@@ -72,11 +72,16 @@ exports.getCarById = async (req, res) => {
 
 // @desc    Create new car
 // @route   POST /api/cars
-// @access  Private/Dealership Manager
+// @access  Private
 exports.createCar = async (req, res) => {
   try {
-    // Add user to req.body
-    req.body.dealership = req.body.dealership || req.user.dealership
+    // Add user's ID as owner
+    req.body.owner = req.user.id
+    
+    // Remove dealership if it exists
+    if (req.body.dealership) {
+      delete req.body.dealership
+    }
 
     const car = await Car.create(req.body)
 
@@ -104,7 +109,7 @@ exports.createCar = async (req, res) => {
 
 // @desc    Update car
 // @route   PUT /api/cars/:id
-// @access  Private/Dealership Manager
+// @access  Private
 exports.updateCar = async (req, res) => {
   try {
     let car = await Car.findById(req.params.id)
@@ -117,11 +122,17 @@ exports.updateCar = async (req, res) => {
     }
 
     // Make sure user is car owner or admin
-    if (car.dealership.toString() !== req.user.dealership && req.user.role !== "admin") {
+    if (car.owner.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(401).json({
         success: false,
         message: "Not authorized to update this car",
       })
+    }
+
+    // Ensure owner field is preserved and dealership is removed
+    req.body.owner = car.owner
+    if (req.body.dealership) {
+      delete req.body.dealership
     }
 
     car = await Car.findByIdAndUpdate(req.params.id, req.body, {
@@ -153,7 +164,7 @@ exports.updateCar = async (req, res) => {
 
 // @desc    Delete car
 // @route   DELETE /api/cars/:id
-// @access  Private/Dealership Manager
+// @access  Private
 exports.deleteCar = async (req, res) => {
   try {
     const car = await Car.findById(req.params.id)
@@ -166,7 +177,7 @@ exports.deleteCar = async (req, res) => {
     }
 
     // Make sure user is car owner or admin
-    if (car.dealership.toString() !== req.user.dealership && req.user.role !== "admin") {
+    if (car.owner.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(401).json({
         success: false,
         message: "Not authorized to delete this car",
@@ -211,7 +222,7 @@ exports.getFeaturedCars = async (req, res) => {
 
 // @desc    Add binary image to car
 // @route   POST /api/cars/:id/images
-// @access  Private/Dealership Manager
+// @access  Private
 exports.addBinaryImageToCar = async (req, res) => {
   const session = await mongoose.startSession();
   
@@ -230,7 +241,7 @@ exports.addBinaryImageToCar = async (req, res) => {
     }
 
     // Check authorization
-    if (car.dealership.toString() !== req.user.dealership && req.user.role !== "admin") {
+    if (car.owner.toString() !== req.user.id && req.user.role !== "admin") {
       await session.abortTransaction();
       session.endSession();
       return res.status(401).json({
@@ -331,8 +342,8 @@ exports.getBinaryImage = async (req, res) => {
 // @access  Private
 exports.getMyListings = async (req, res) => {
   try {
-    // Find cars where the user is associated with the dealership
-    const cars = await Car.find({ dealership: req.user.dealership }).sort({ createdAt: -1 });
+    // Find cars where the user is the owner
+    const cars = await Car.find({ owner: req.user.id }).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
