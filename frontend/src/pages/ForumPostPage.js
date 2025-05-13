@@ -22,6 +22,12 @@ const ForumPostPage = () => {
   const [commentText, setCommentText] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [commentError, setCommentError] = useState("")
+  // State for managing votes optimistically
+  const [optimisticVotes, setOptimisticVotes] = useState({
+    upvotes: [],
+    downvotes: []
+  })
+  const [isVoting, setIsVoting] = useState(false)
   
   // For creating a new post
   const [newPostTitle, setNewPostTitle] = useState("")
@@ -55,6 +61,16 @@ const ForumPostPage = () => {
   useEffect(() => {
     fetchPost();
   }, [fetchPost]);
+
+  // Initialize optimistic votes whenever post data changes
+  useEffect(() => {
+    if (post) {
+      setOptimisticVotes({
+        upvotes: post.upvotes || [],
+        downvotes: post.downvotes || []
+      });
+    }
+  }, [post]);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
@@ -90,11 +106,60 @@ const ForumPostPage = () => {
       return;
     }
 
+    if (isVoting) return; // Prevent multiple clicks
+    setIsVoting(true);
+
+    // First, optimistically update the UI
+    let newUpvotes = [...optimisticVotes.upvotes];
+    let newDownvotes = [...optimisticVotes.downvotes];
+    const userId = user._id;
+
+    if (action === "upvote") {
+      // If already upvoted, remove the upvote
+      if (newUpvotes.includes(userId)) {
+        newUpvotes = newUpvotes.filter(id => id !== userId);
+      } 
+      // Otherwise add upvote and remove any downvote
+      else {
+        newUpvotes.push(userId);
+        newDownvotes = newDownvotes.filter(id => id !== userId);
+      }
+    } else if (action === "downvote") {
+      // If already downvoted, remove the downvote
+      if (newDownvotes.includes(userId)) {
+        newDownvotes = newDownvotes.filter(id => id !== userId);
+      } 
+      // Otherwise add downvote and remove any upvote
+      else {
+        newDownvotes.push(userId);
+        newUpvotes = newUpvotes.filter(id => id !== userId);
+      }
+    }
+
+    // Update the UI optimistically
+    setOptimisticVotes({
+      upvotes: newUpvotes,
+      downvotes: newDownvotes
+    });
+
     try {
+      // Then make the API call
       await api.put(`/forum/${id}/like`, { action });
-      fetchPost(); // Refresh post to update votes
+      
+      // No need to refresh the entire post data
+      // The optimistic update already reflects the desired state
     } catch (err) {
       console.error("Failed to vote:", err);
+      
+      // If the API call fails, revert to the original vote counts
+      if (post) {
+        setOptimisticVotes({
+          upvotes: post.upvotes || [],
+          downvotes: post.downvotes || []
+        });
+      }
+    } finally {
+      setIsVoting(false);
     }
   };
 
@@ -145,11 +210,11 @@ const ForumPostPage = () => {
   };
 
   const hasUserUpvoted = () => {
-    return post?.upvotes.includes(user?._id);
+    return optimisticVotes.upvotes.includes(user?._id);
   };
 
   const hasUserDownvoted = () => {
-    return post?.downvotes.includes(user?._id);
+    return optimisticVotes.downvotes.includes(user?._id);
   };
 
   // Render create post form if id is "new"
@@ -314,18 +379,24 @@ const ForumPostPage = () => {
                 <button
                   className={`vote-button upvote ${hasUserUpvoted() ? "active" : ""}`}
                   onClick={() => handleVote("upvote")}
-                  disabled={!isAuthenticated}
+                  disabled={!isAuthenticated || isVoting}
+                  title={isAuthenticated ? "Upvote" : "Login to vote"}
                 >
-                  <i className="icon-thumbs-up"></i>
-                  <span>{post.upvotes.length}</span>
+                  <svg className="vote-arrow up-arrow" viewBox="0 0 24 24" width="16" height="16">
+                    <path fill="currentColor" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path>
+                  </svg>
+                  <span>{optimisticVotes.upvotes.length}</span>
                 </button>
                 <button
                   className={`vote-button downvote ${hasUserDownvoted() ? "active" : ""}`}
                   onClick={() => handleVote("downvote")}
-                  disabled={!isAuthenticated}
+                  disabled={!isAuthenticated || isVoting}
+                  title={isAuthenticated ? "Downvote" : "Login to vote"}
                 >
-                  <i className="icon-thumbs-down"></i>
-                  <span>{post.downvotes.length}</span>
+                  <svg className="vote-arrow down-arrow" viewBox="0 0 24 24" width="16" height="16">
+                    <path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path>
+                  </svg>
+                  <span>{optimisticVotes.downvotes.length}</span>
                 </button>
               </div>
             </div>
